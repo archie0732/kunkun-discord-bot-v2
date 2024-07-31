@@ -16,7 +16,6 @@ interface Command {
 
 const handleCommands = (client: ExtendedClient): void => {
   client.handleCommands = async () => {
-    // 读取 TypeScript 文件夹
     const commandFolders = fs.readdirSync(join(__dirname, "../../commands"));
     for (const folder of commandFolders) {
       const commandFiles = fs
@@ -27,7 +26,6 @@ const handleCommands = (client: ExtendedClient): void => {
       for (const file of commandFiles) {
         const commandPath = join(__dirname, `../../commands/${folder}/${file}`);
         try {
-          // 加载 TypeScript 文件
           const commandModule = await import(commandPath);
           const command: Command = commandModule.default || commandModule;
           commands!.set(command.data.name, command);

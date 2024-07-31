@@ -7,7 +7,7 @@ import { EmbedBuilder } from "discord.js";
 import { type Manhuagui } from "./manhuagui_fetch";
 import { type Channel } from "discord.js";
 
-async function checkUpdateManguagui(client: ExtendedClient) {
+async function checkUpdateManhuagui(client: ExtendedClient) {
   const folderPath = `./resource/manhuagui`;
 
   const folder = fs.readdirSync(folderPath);
@@ -17,21 +17,25 @@ async function checkUpdateManguagui(client: ExtendedClient) {
     const localData: local_subscribe = JSON.parse(fs.readFileSync(filePath, "utf-8"));
     const channel = await client.channels.fetch(localData.channel);
     if (!channel) {
-      console.error(chalk.red(`cannot find the channel`));
+      console.error(chalk.red(`[manhuagui]cannot find the channel`));
     }
+    let flag: boolean = false;
     for (const entry of localData.sub) {
       try {
-        const manhuagui = await client.fetchMangaugui!(entry.id);
+        const manhuagui = await client.fetchManhuagui!(entry.id);
         if (entry.last_up !== manhuagui.status.lastest_chapter) {
           entry.last_up = manhuagui.status.lastest_chapter;
-          console.log(`manguagui[${manhuagui.title.Ch}]  -  更新了: ${manhuagui.status.lastest_chapter}`);
+          console.log(`[manhuagui]${manhuagui.title.Ch}  -  更新了: ${manhuagui.status.lastest_chapter}`);
           await sendAnnouncement(client, manhuagui, channel!);
-          fs.writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
-          console.log(`manguagui  -  檔案寫入成功!`);
+          flag = true;
         }
       } catch (error) {
-        console.error(chalk.red(error));
+        console.error(chalk.red("[manhuagui]" + error));
       }
+    }
+    if (flag) {
+      fs.writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
+      console.log(chalk.blue(`[manhuagui]${files}  -  檔案寫入成功!`));
     }
   }
 }
@@ -39,14 +43,16 @@ async function checkUpdateManguagui(client: ExtendedClient) {
 async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhuagui, channel: Channel) {
   const embed = new EmbedBuilder()
     .setAuthor({
-      name: `🎉 ${client.user?.username}: manguagui - ${manhuagui.title.Ch}更新`,
+      name: `${client.user?.username} - 被切斷的五條悟: manhuagui`,
       iconURL: client.user?.displayAvatarURL() || undefined,
     })
     .setTitle(`${manhuagui.title.Ch} 更新至 ${manhuagui.status.lastest_chapter}`)
-    .setURL(`https://tw.manhuagui.com/comic/${manhuagui.title.id}/`)
+    .setURL(`${manhuagui.status.chapter_url}`)
     .setImage(manhuagui.cover)
     .setThumbnail(`https://tw.manhuagui.com/favicon.ico`)
-    .setDescription(`- 您可以使用 /manguagui_sub 來訂閱\n- 或者使用 /manguagui_rm 來取消訂閱`)
+    .setDescription(
+      `- 您可以使用 </sub_manhuagui:1268082123466739764> 來訂閱\n- 或者使用 </rm_manhuagui:1268082123466739765> 來取消訂閱`
+    )
     .setTimestamp(Date.now())
     .addFields(
       {
@@ -66,29 +72,30 @@ async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhuagui, ch
       },
       {
         name: `🔍 目前:`,
-        value: `${manhuagui.status.now}，目前更新到: ${manhuagui.status.lastest_chapter} | ${manhuagui.status.lastest_up}`,
+        value: `${manhuagui.status.now}，${manhuagui.status.lastest_up}更新到: ${manhuagui.status.lastest_chapter}`,
       },
       {
         name: `🏷️ 標籤`,
         value: `${manhuagui.introduce.categories.join(", ")}`,
       }
     )
-    .setFooter({ text: `kunkun-bot v2 with TypeScripe` });
+    .setFooter({ text: `archie0732's kunkun-bot v2 with TypeScripe` });
 
   try {
     if (channel && channel.isTextBased()) {
       await channel.send({
-        content: `您訂閱的${manhuagui.title.Ch}更新了${manhuagui.status.lastest_chapter}`,
+        content: `您在[mahuagui](https://tw.manhuagui.com)訂閱的 [${manhuagui.title.Ch}](https://tw.manhuagui.com/comic/${manhuagui.title.id}) 更新了 [${manhuagui.status.lastest_chapter}](${manhuagui.status.chapter_url})`,
         embeds: [embed],
       });
     } else {
-      console.error(`Invalid channel`);
+      throw `[manguagui]Invalid channel`;
     }
   } catch (error) {
     console.error(chalk.red(`Failed to send announcement: ${error}`));
+    throw `[manhuagui] sendAnnouncenent happen error`;
   }
 }
 
 export default (client: ExtendedClient) => {
-  client.checkUpdateManguagui = checkUpdateManguagui;
+  client.checkUpdateManhuagui = checkUpdateManhuagui;
 };
