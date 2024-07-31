@@ -18,7 +18,7 @@ export default {
       if (client.checkUpdateManhuagui && client.hanime1A) {
         await client.checkUpdateManhuagui(client).catch(console.error);
         await client.hanime1A(client).catch(console.error);
-        console.log(chalk.yellow(`${client.user?.tag}: 檢查完成`));
+        console.log(chalk.yellow(`[kunkun bot]${client.user?.tag}: 檢查完成`));
       } else {
         console.error(chalk.red("checkUpdateManguagui function is not defined."));
       }
@@ -26,7 +26,6 @@ export default {
 
     setInterval(async () => {
       console.log(chalk.green(`開始定時檢查更新.....`));
-
       await client.checkUpdateManhuagui!(client).catch(console.error);
       await client.hanime1A!(client).catch(console.error);
       console.log(chalk.blue(`檢查完成!`));
