@@ -50,6 +50,7 @@ export default {
       localData.sub.push({
         name: tag!.replace(/%20/g, " "),
         id: hanime1.id,
+        status:"",
         last_up: hanime1.title,
         other: "",
       });

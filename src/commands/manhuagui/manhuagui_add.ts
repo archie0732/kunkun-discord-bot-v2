@@ -71,6 +71,7 @@ export default {
       localData.sub.push({
         name: manhuagui.title.Ch,
         id: id!,
+        status: manhuagui.status.now,
         last_up: manhuagui.status.lastest_chapter,
         other: manhuagui.status.chapter_url,
       });
