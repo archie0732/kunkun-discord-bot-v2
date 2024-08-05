@@ -60,10 +60,8 @@ export default {
         content: `[hanime1]${tag?.replace(/%20/g, " ")} - 訂閱成功!`,
       });
     } catch (error) {
-      console.error(`[hanime1]錯誤:`, error);
-      await interaction.editReply({
-        content: "訂閱過程中發生錯誤，請稍後再試。",
-      });
+      console.error(`[hanime1]add error:`);
+      throw error;
     }
   },
 };

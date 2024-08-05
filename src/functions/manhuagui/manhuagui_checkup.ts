@@ -25,12 +25,13 @@ async function checkUpdateManhuagui(client: ExtendedClient) {
         const manhuagui = await client.fetchManhuagui!(entry.id);
         if (entry.last_up !== manhuagui.status.lastest_chapter) {
           entry.last_up = manhuagui.status.lastest_chapter;
+          entry.other = manhuagui.status.chapter_url;
           console.log(`[manhuagui]${manhuagui.title.Ch}  -  更新了: ${manhuagui.status.lastest_chapter}`);
           await sendAnnouncement(client, manhuagui, channel!);
           flag = true;
         }
       } catch (error) {
-        console.error(chalk.red("[manhuagui]" + error));
+        console.error(chalk.red("[manhuagui]fetch manhuagui error: " + error));
       }
     }
     if (flag) {
@@ -55,6 +56,7 @@ async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhuagui, ch
     )
     .setTimestamp(Date.now())
     .addFields(
+      { name: `🛜 原網站`, value: `[manhuagui](https://tw.manhuagui.com/)`, inline: true },
       {
         name: `✒️ 作者`,
         value: `${manhuagui.introduce.author}`,
@@ -66,13 +68,13 @@ async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhuagui, ch
         inline: true,
       },
       {
-        name: `🗺️ 漫畫地區`,
+        name: `🗺️ 漫畫類型`,
         value: `${manhuagui.introduce.local_publish}`,
         inline: true,
       },
       {
-        name: `🔍 目前:`,
-        value: `${manhuagui.status.now}，${manhuagui.status.lastest_up}更新到: ${manhuagui.status.lastest_chapter}`,
+        name: `🔍 目前狀態`,
+        value: `${manhuagui.status.now}，${manhuagui.status.date}更新到: ${manhuagui.status.lastest_chapter}`,
       },
       {
         name: `🏷️ 標籤`,

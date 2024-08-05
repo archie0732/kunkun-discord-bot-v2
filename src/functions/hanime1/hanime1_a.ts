@@ -51,6 +51,7 @@ async function sendMessage(client: ExtendedClient, channel: Channel, hanime1: Ha
     )
     .setThumbnail(`https://www.iconsdb.com/icons/preview/red/letter-h-xxl.png`)
     .addFields(
+      { name: `🛜 原網站`, value: `[hanime](https://hanime1.me/)`, inline: true },
       {
         name: `🔍 作者 / 發行商`,
         value: `${hanime1.artist}`,
@@ -70,11 +71,10 @@ async function sendMessage(client: ExtendedClient, channel: Channel, hanime1: Ha
   try {
     if (channel && channel.isTextBased()) {
       await channel.send({
-        content: `您在 [hanime1](https://hanime1.me/) 訂閱的 [${
-          hanime1.tag
-        }](https://hanime1.me/search?query=${hanime1.tag.replace(/ /g, "%20")}) 更新了 [${hanime1.title}](${
-          hanime1.video_url
-        })`,
+        content: `您在 [hanime1] 訂閱的 [${hanime1.tag}](https://hanime1.me/search?query=${hanime1.tag.replace(
+          / /g,
+          "%20"
+        )}) 更新了 [${hanime1.title}](${hanime1.video_url})`,
         embeds: [embed],
       });
     } else {

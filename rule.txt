@@ -1,2 +1,19 @@
 update: 
     webName [updateTitle] - 更新了: chapterName
+
+
+command: 
+    - content: ["webName"]"tag" 更新了 "chapterName"
+    - embeds: 
+         > title
+         > url
+         > author
+         > thill
+         > image
+         > describe
+         > field:{
+            web, tag, favor, other
+         }
+         > footer
+    - error: 
+        throw ``

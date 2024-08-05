@@ -15,7 +15,7 @@ const handleEvents = (client: ExtendedClient): void => {
       const eventFiles = fs
         //`./src/events/${folder}`
         .readdirSync(join(__dirname, `../../events/${folder}`))
-        .filter((file) => file.endsWith(".ts") || file.endsWith(".js")); // 確保加载.ts 和 .js 文件
+        .filter((file) => file.endsWith(".ts") || file.endsWith(".js")); 
       switch (folder) {
         case "client":
           for (const file of eventFiles) {

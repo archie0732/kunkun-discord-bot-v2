@@ -17,7 +17,7 @@ export type Manhuagui = {
   cover: string;
   status: {
     now: string;
-    lastest_up: string;
+    date: string;
     lastest_chapter: string;
     chapter_url: string;
   };
@@ -44,10 +44,10 @@ async function fetchManhuagui(id: string): Promise<Manhuagui> {
       .join(", ");
     const author = $(".detail-list").find("span").eq(4).find("a").text();
     const status = $("li.status").find("span.red").eq(0).text();
-    const chapter_url = "https://tw.manhuagui.com/" + $("li.status").find("a.blue").attr("href");
-    const lastest_up = $("li.status").find("span.red").eq(1).text();
-
-    const lastest_chapter = $(".chapter-list").find("ul").eq(2).find("a.status0").attr("title");
+    const date = $("li.status").find("span.red").eq(1).text();
+    const chapter_url =
+      "https://tw.manhuagui.com/" + $("#chapter-list-1").find("ul[style=display:block]").find("a.status0").attr("href");
+    const lastest_chapter = $("#chapter-list-1").find("ul[style=display:block]").find("a.status0").attr("title");
 
     const result: Manhuagui = {
       title: {
@@ -64,7 +64,7 @@ async function fetchManhuagui(id: string): Promise<Manhuagui> {
       cover,
       status: {
         now: status,
-        lastest_up,
+        date,
         lastest_chapter: lastest_chapter || "",
         chapter_url: chapter_url || "",
       },
