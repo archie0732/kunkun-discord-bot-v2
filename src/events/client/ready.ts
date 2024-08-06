@@ -1,34 +1,39 @@
+import { Events } from "discord.js";
+import { hanime1A } from "@/api/hanime1/hanime1_a";
+
+import Manhuagui from "@/api/manhuagui";
 import chalk from "chalk";
-import { ExtendedClient } from "../../types/ExtendedClient";
+
+import type { Event } from "@/events";
+
+const name = Events.ClientReady;
 
 export default {
-  name: "ready",
-  once: true,
-  execute(client: ExtendedClient) {
+  name,
+  async once(client) {
     console.log(chalk.bgGreen(`${client.user?.tag} 登入成功`));
 
-    client.user?.setPresence({
+    client.user.setPresence({
       activities: [{ name: `大戰宿儺......` }],
       status: "online",
     });
 
     console.log(chalk.blue(`啟動更新檢查......`));
 
-    setTimeout(async () => {
-      if (client.checkUpdateManhuagui && client.hanime1A) {
-        await client.checkUpdateManhuagui(client).catch(console.error);
-        await client.hanime1A(client).catch(console.error);
-        console.log(chalk.yellow(`[kunkun bot]${client.user?.tag}: 檢查完成`));
-      } else {
-        console.error(chalk.red("checkUpdateManguagui function is not defined."));
-      }
-    }, 3_000);
+    await this.registerCommands();
 
-    setInterval(async () => {
+    const update = () => {
       console.log(chalk.green(`開始定時檢查更新.....`));
-      await client.checkUpdateManhuagui!(client).catch(console.error);
-      await client.hanime1A!(client).catch(console.error);
-      console.log(chalk.blue(`檢查完成!`));
-    }, 3600000);
+
+      Promise.all([
+        Manhuagui.checkUpdateManhuagui(this).catch(console.error),
+        hanime1A(this).catch(console.error),
+      ]).then(() => {
+        console.log(chalk.yellow(`[kunkun bot]${client.user?.tag}: 檢查完成`));
+      });
+    };
+
+    update();
+    setInterval(() => void update(), 3_600_000);
   },
-};
+} as Event<typeof name>;

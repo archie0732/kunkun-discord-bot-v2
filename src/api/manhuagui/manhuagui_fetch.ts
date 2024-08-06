@@ -1,6 +1,6 @@
-import axios from "axios";
 import { load } from "cheerio";
-import { ExtendedClient } from "../../types/ExtendedClient";
+
+import axios from "axios";
 
 export type Manhuagui = {
   title: {
@@ -23,7 +23,7 @@ export type Manhuagui = {
   };
 };
 
-async function fetchManhuagui(id: string): Promise<Manhuagui> {
+export async function fetchManhuagui(id: string): Promise<Manhuagui> {
   const url = "https://tw.manhuagui.com/comic/" + id;
 
   try {
@@ -39,7 +39,7 @@ async function fetchManhuagui(id: string): Promise<Manhuagui> {
       .find("span")
       .eq(3)
       .find("a")
-      .map((i, el) => $(el).text())
+      .map((_, el) => $(el).text())
       .get()
       .join(", ");
     const author = $(".detail-list").find("span").eq(4).find("a").text();
@@ -75,7 +75,3 @@ async function fetchManhuagui(id: string): Promise<Manhuagui> {
     throw `[manhuagui]fetch error: ${error}`;
   }
 }
-
-export default (client: ExtendedClient) => {
-  client.fetchManhuagui = fetchManhuagui;
-};

@@ -1,5 +1,6 @@
-import { ChatInputCommandInteraction, Client, EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import { ExtendedClient } from "../../types/ExtendedClient";
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
+import { ExtendedClient } from "@/types/ExtendedClient";
+
 import chalk from "chalk";
 
 export default {

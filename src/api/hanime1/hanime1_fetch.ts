@@ -1,6 +1,5 @@
 import cheerio from "cheerio";
 import puppeteer from "puppeteer";
-import { ExtendedClient } from "../../types/ExtendedClient";
 
 export type Hanime1 = {
   title: string;
@@ -11,12 +10,7 @@ export type Hanime1 = {
   cover_url: string;
 };
 
-/**
- *
- * @param {string} tag
- * @returns {Promise<{title :string, id: string, artist :string, video_url :string, cover_url: string}|null>}
- */
-async function fetchHtml(tag: string): Promise<Hanime1> {
+export async function hanime1_fetch(tag: string): Promise<Hanime1> {
   const url = "https://hanime1.me/search?query=" + tag;
 
   const browser = await puppeteer.launch();
@@ -48,7 +42,3 @@ async function fetchHtml(tag: string): Promise<Hanime1> {
     cover_url: cover_url,
   };
 }
-
-export default (client: ExtendedClient) => {
-  client.hanime1_fetch = fetchHtml;
-};

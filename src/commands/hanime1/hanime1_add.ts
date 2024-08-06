@@ -1,8 +1,11 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { ExtendedClient } from "../../types/ExtendedClient";
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { local_subscribe } from "../../types/subData";
+import { ExtendedClient } from "@/types/ExtendedClient";
+import { hanime1_fetch } from "@/api/hanime1/hanime1_fetch";
+
 import chalk from "chalk";
+
+import type { local_subscribe } from "@/types/subData";
 
 export default {
   data: new SlashCommandBuilder()
@@ -11,13 +14,13 @@ export default {
     .setDescription("訂閱在hanime1的作者或作品標籤，當有更新時通知")
     .addStringOption((option) => option.setName("tag").setDescription("作者名或標籤名").setRequired(true)),
 
-  async execute(interaction: ChatInputCommandInteraction, client: ExtendedClient) {
+  async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
     const tag = interaction.options.getString("tag")?.replace(/ /g, "%20");
 
     try {
       await interaction.deferReply({ ephemeral: true });
 
-      const hanime1 = await client.hanime1_fetch!(tag!);
+      const hanime1 = await hanime1_fetch(tag!);
       const filePath = `./resource/hanime1/${interaction.guildId}.json`;
 
       if (!hanime1) {
@@ -50,7 +53,7 @@ export default {
       localData.sub.push({
         name: tag!.replace(/%20/g, " "),
         id: hanime1.id,
-        status:"",
+        status: "",
         last_up: hanime1.title,
         other: "",
       });

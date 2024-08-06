@@ -1,13 +1,16 @@
 import { EmbedBuilder } from "discord.js";
-import { ExtendedClient } from "../../types/ExtendedClient";
-import { join } from "path";
+import { ExtendedClient } from "@/types/ExtendedClient";
 import { readdirSync, readFileSync, writeFileSync } from "fs";
-import { local_subscribe } from "../../types/subData";
-import chalk from "chalk";
-import { type Channel } from "discord.js";
-import { Hanime1 } from "./hanime1_fetch";
+import { hanime1_fetch } from "./hanime1_fetch";
+import { join } from "path";
 
-async function hanime1A(client: ExtendedClient) {
+import chalk from "chalk";
+
+import type { Channel } from "discord.js";
+import type { Hanime1 } from "./hanime1_fetch";
+import type { local_subscribe } from "@/types/subData";
+
+export async function hanime1A(client: ExtendedClient) {
   const folderPath = `./resource/hanime1`;
   const folder = readdirSync(folderPath);
   for (const file of folder) {
@@ -18,10 +21,10 @@ async function hanime1A(client: ExtendedClient) {
     let flag: boolean = false;
     for (const entry of localData.sub) {
       try {
-        const hanime1 = await client.hanime1_fetch!(entry.name!);
+        const hanime1 = await hanime1_fetch(entry.name!);
         if (hanime1.id !== entry.id) {
           console.log(chalk.yellow(`[hanime1]${hanime1.tag} - 更新了: ${hanime1.title}`));
-          await sendMessage(client, channel!, hanime1, "");
+          await sendMessage(client, channel!, hanime1);
           entry.last_up = hanime1.title;
           entry.id = hanime1.id;
           flag = true;
@@ -38,7 +41,7 @@ async function hanime1A(client: ExtendedClient) {
   }
 }
 
-async function sendMessage(client: ExtendedClient, channel: Channel, hanime1: Hanime1, message: string) {
+async function sendMessage(client: ExtendedClient, channel: Channel, hanime1: Hanime1) {
   const embed = new EmbedBuilder()
     .setAuthor({
       name: `${client.user?.tag} - 被乙骨操作的機器人`,
@@ -85,7 +88,3 @@ async function sendMessage(client: ExtendedClient, channel: Channel, hanime1: Ha
     throw error;
   }
 }
-
-export default (client: ExtendedClient) => {
-  client.hanime1A = hanime1A;
-};

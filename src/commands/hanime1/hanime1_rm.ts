@@ -1,20 +1,23 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { describe } from "node:test";
-import { ExtendedClient } from "../../types/ExtendedClient";
-import { local_subscribe } from "../../types/subData";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
+import { existsSync, readFileSync, writeFileSync } from "fs";
+import { ExtendedClient } from "@/types/ExtendedClient";
+
 import chalk from "chalk";
+
+import type { local_subscribe } from "@/types/subData";
 
 export default {
   data: new SlashCommandBuilder()
-    .setName(`rm_hanime1`)
+    .setName("rm_hanime1")
     .setNameLocalization("zh-TW", "取消訂閱hanime1")
-    .setDescription(`取消訂閱在 hanime1.me 上的訂閱內容`)
-    .addStringOption((option) => option.setName(`tag`).setDescription(`以訂閱的作者或標籤名`).setRequired(true)),
+    .setDescription("取消訂閱在 hanime1.me 上的訂閱內容")
+    .addStringOption(
+      new SlashCommandStringOption().setName("tag").setDescription("已經訂閱的作者或標籤名稱").setRequired(true)
+    ),
 
-  async execute(interaction: ChatInputCommandInteraction, client: ExtendedClient) {
+  async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
     try {
-      const tag = interaction.options.getString(`tag`);
+      const tag = interaction.options.getString("tag", true);
       const filePath = `./resource/hanime1/${interaction.guildId}.json`;
 
       if (!existsSync(filePath)) {

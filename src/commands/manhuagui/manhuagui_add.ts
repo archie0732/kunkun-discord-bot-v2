@@ -1,13 +1,12 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { ExtendedClient } from "../../types/ExtendedClient";
 import { readFileSync, existsSync, writeFileSync } from "fs";
-import { local_subscribe } from "../../types/subData";
+import { ExtendedClient } from "@/types/ExtendedClient";
+import { isNumeric } from "@/utils/isNumeric";
+
+import Manhuagui from "@/api/manhuagui";
 import chalk from "chalk";
 
-function isNumeric(input: string): boolean {
-  const numericRegex = /^[0-9]+$/;
-  return numericRegex.test(input);
-}
+import type { local_subscribe } from "@/types/subData";
 
 export default {
   data: new SlashCommandBuilder()
@@ -17,14 +16,7 @@ export default {
     .addStringOption((option) =>
       option.setName(`id`).setDescription(`在 https://tw.manhuagui.com/ 上的漫畫id`).setRequired(true)
     ),
-
-  /**
-   *
-   * @param interaction
-   * @param client
-   * @returns {Promise<void>}
-   */
-  async execute(interaction: ChatInputCommandInteraction, client: ExtendedClient) {
+  async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
     try {
       const id = interaction.options.getString("id");
       if (!isNumeric(id || "")) {
@@ -36,7 +28,7 @@ export default {
         return;
       }
 
-      const manhuagui = await client.fetchManhuagui!(id!);
+      const manhuagui = await Manhuagui.fetchManhuagui(id!);
       if (!manhuagui) {
         await interaction.reply({
           content: `抓取資料失敗`,

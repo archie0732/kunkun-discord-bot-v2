@@ -1,33 +1,29 @@
-import { ChatInputCommandInteraction, Client } from "discord.js";
-import { ExtendedClient } from '../../types/ExtendedClient';
+import { Events } from "discord.js";
 import chalk from "chalk";
 
+import type { Event } from "@/events";
+
+const name = Events.InteractionCreate;
+
 export default {
-  name: "interactionCreate",
-  /**
-   * @param interaction - The interaction object from the Discord API.
-   * @param client - The Discord client instance.
-   * @returns {Promise<void>}
-   */
-  async execute(interaction: ChatInputCommandInteraction, client: ExtendedClient): Promise<void> {
-    if (interaction.isCommand()) {
-      const { commands } = client;
-      const { commandName } = interaction;
-      const command = commands!.get(commandName);
+  name,
+  async on(interaction): Promise<void> {
+    if (!interaction.isChatInputCommand()) return;
 
-      if (!command) return;
+    const command = this.commands.get(interaction.commandName);
 
-      try {
-        console.log(`${interaction.user.tag} using command -- ${commandName}`);
-        await command.execute(interaction, client);
-        console.log(chalk.blue(`run command sucess!`));
-      } catch (error) {
-        console.error(chalk.red(error));
-        await interaction.reply({
-          content: `Something went wrong while executing this command...`,
-          ephemeral: true,
-        });
-      }
+    if (!command) return;
+
+    try {
+      console.log(`${interaction.user.tag} using command -- ${interaction.commandName}`);
+      await command.execute(interaction, this);
+      console.log(chalk.blue(`run command sucess!`));
+    } catch (error) {
+      console.error(chalk.red(error));
+      await interaction.reply({
+        content: `Something went wrong while executing this command...`,
+        ephemeral: true,
+      });
     }
   },
-};
+} as Event<typeof name>;

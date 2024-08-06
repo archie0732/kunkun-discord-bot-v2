@@ -1,8 +1,11 @@
-import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js";
-import { ExtendedClient } from "../../types/ExtendedClient";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { local_subscribe } from "../../types/subData";
+import { ExtendedClient } from "@/types/ExtendedClient";
+import { isNumeric } from "@/utils/isNumeric";
+
 import chalk from "chalk";
+
+import type { local_subscribe } from "@/types/subData";
 
 export default {
   data: new SlashCommandBuilder()
@@ -11,11 +14,11 @@ export default {
     .setDescription("取消訂閱在 https://tw.manhuagui.com/ 訂閱的漫畫")
     .addStringOption((option) => option.setName("id").setDescription("漫畫的ID").setRequired(true)),
 
-  async execute(interaction: ChatInputCommandInteraction, client: ExtendedClient) {
+  async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
     try {
       const id = interaction.options.getString("id");
 
-      if (!client.isNumberic!(id!)) {
+      if (!isNumeric(id!)) {
         await interaction.reply({
           content: `您的輸入包含非法字元`,
           ephemeral: true,

@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { ExtendedClient } from "../../types/ExtendedClient";
+import { ExtendedClient } from "@/types/ExtendedClient";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 export default {

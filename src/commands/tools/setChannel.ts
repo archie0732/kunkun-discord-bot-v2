@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync } from "fs";
-import { ExtendedClient } from "../../types/ExtendedClient";
-import { ChannelType, ChatInputCommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
-import { local_subscribe } from "../../types/subData";
+import { ExtendedClient } from "@/types/ExtendedClient";
+import { ChannelType, ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+
+import type { local_subscribe } from "@/types/subData";
 
 export default {
   data: new SlashCommandBuilder()
@@ -26,7 +27,7 @@ export default {
     )
     .addChannelOption((optoin) => optoin.setName(`channel`).setDescription(`要移去的頻道`).setRequired(true)),
 
-  async execute(interaction: ChatInputCommandInteraction, client: ExtendedClient) {
+  async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
     const option = interaction.options.getString(`option`);
     const channel = interaction.options.getChannel(`channel`);
     if (!(channel?.type === ChannelType.GuildText)) {

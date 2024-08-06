@@ -1,13 +1,37 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
-    "strict": true,
+    // Enable latest features
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "resolveJsonModule": true,
+    "allowJs": true,
     "esModuleInterop": true,
+
+    // Bundler mode
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "declaration": true,
+    "declarationDir": "types",
+    "outDir": "dist",
+    "rootDir": "src",
+    "paths": {
+      "@/*": ["./src/*"],
+      "~/*": ["./*"]
+    },
+
+    // Best practices
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
     "skipLibCheck": true,
-    "outDir": "./dist",
-    "rootDir": "./src" // 确保指向源文件夹
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+    "noFallthroughCasesInSwitch": true,
+
+    // Some stricter flags
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "forceConsistentCasingInFileNames": true
+  }
 }

@@ -1,13 +1,16 @@
+import { EmbedBuilder } from "discord.js";
+import { ExtendedClient } from "@/types/ExtendedClient";
+import { fetchManhuagui } from "./manhuagui_fetch";
 import { join } from "path";
+import type { local_subscribe } from "@/types/subData";
+
 import chalk from "chalk";
 import fs from "fs";
-import { ExtendedClient } from "../../types/ExtendedClient";
-import { local_subscribe } from "../../types/subData";
-import { EmbedBuilder } from "discord.js";
-import { type Manhuagui } from "./manhuagui_fetch";
-import { type Channel } from "discord.js";
 
-async function checkUpdateManhuagui(client: ExtendedClient) {
+import type { Channel } from "discord.js";
+import type { Manhuagui } from "./manhuagui_fetch";
+
+export async function checkUpdateManhuagui(client: ExtendedClient) {
   const folderPath = `./resource/manhuagui`;
 
   const folder = fs.readdirSync(folderPath);
@@ -16,13 +19,17 @@ async function checkUpdateManhuagui(client: ExtendedClient) {
     const filePath = join(folderPath, files);
     const localData: local_subscribe = JSON.parse(fs.readFileSync(filePath, "utf-8"));
     const channel = await client.channels.fetch(localData.channel);
+
     if (!channel) {
       console.error(chalk.red(`[manhuagui]cannot find the channel`));
     }
+
     let flag: boolean = false;
+
     for (const entry of localData.sub) {
       try {
-        const manhuagui = await client.fetchManhuagui!(entry.id);
+        const manhuagui = await fetchManhuagui(entry.id);
+
         if (entry.last_up !== manhuagui.status.lastest_chapter) {
           entry.last_up = manhuagui.status.lastest_chapter;
           entry.other = manhuagui.status.chapter_url;
@@ -34,6 +41,7 @@ async function checkUpdateManhuagui(client: ExtendedClient) {
         console.error(chalk.red("[manhuagui]fetch manhuagui error: " + error));
       }
     }
+
     if (flag) {
       fs.writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
       console.log(chalk.blue(`[manhuagui]${files}  -  檔案寫入成功!`));
@@ -41,7 +49,7 @@ async function checkUpdateManhuagui(client: ExtendedClient) {
   }
 }
 
-async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhuagui, channel: Channel) {
+export async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhuagui, channel: Channel) {
   const embed = new EmbedBuilder()
     .setAuthor({
       name: `${client.user?.username} - 被切斷的五條悟: manhuagui`,
@@ -97,7 +105,3 @@ async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhuagui, ch
     throw `[manhuagui] sendAnnouncenent happen error`;
   }
 }
-
-export default (client: ExtendedClient) => {
-  client.checkUpdateManhuagui = checkUpdateManhuagui;
-};
