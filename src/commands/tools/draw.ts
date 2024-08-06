@@ -40,9 +40,8 @@ export default {
         name: `${client.user?.displayName} - 被乙骨操作的機器人: 抽籤! 啟動`,
         iconURL: client.user?.displayAvatarURL(),
       })
-      .setTitle(
-        `${randonMember?.user.displayName}! 羅傑說你是[阿斯芭樂](https://youtu.be/dQw4w9WgXcQ?si=aZ1j3MepifHFAfKY)`
-      )
+      .setTitle(`${randonMember?.user.displayName}! 羅傑說你是阿斯芭樂`)
+      .setURL(`https://youtu.be/dQw4w9WgXcQ?si=aZ1j3MepifHFAfKY`)
       .setDescription(`- 使用</draw2486:1268093679214657587> 來抽取下一位阿斯芭樂吧!`)
       .setImage(`https://numeroscop.net/img/numbers/numerology/angel/2486.png`)
       .setThumbnail(
