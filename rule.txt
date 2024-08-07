@@ -21,7 +21,6 @@ command:
 
 https://nhentai.net/api/galleries/search?query=yan-yam
 
-ssh kamiya@61.58.107.206 -p 23 :4047
 
 
 scp -P 23 ./.env kamiya@61.58.107.206:~/gh/kunkun-discord-bot-v2 
