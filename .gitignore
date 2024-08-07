@@ -3,5 +3,3 @@ dist/
 node_modules/
 resource/
 types/
-
-src/a.txt
