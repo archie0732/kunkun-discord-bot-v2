@@ -6,8 +6,8 @@ import { ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandStringOpt
 import { existsSync, readFileSync, writeFileSync } from "fs";
 
 import type { local_subscribe } from "@/types/subData";
-import type { archieCache } from "@/types/Archiecache";
-import { url } from "inspector";
+import type { archieCache } from "@/types/Archiecach";
+
 
 export default {
   data: new SlashCommandBuilder()
