@@ -2,7 +2,6 @@
 dist/
 node_modules/
 resource/
-types/
 
 bun.lockb
 .login
