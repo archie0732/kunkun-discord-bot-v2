@@ -48,11 +48,11 @@ export class DoujinList {
         }
       }
     }
-    throw "[nhentai]cannot find the tag by APIserach";
+    throw "cannot find the tag by APIserach";
   }
 
   doujin(): Doujin {
-    if (this.result.length === 0) throw "[nhentai]no doujin find in the result list!";
+    if (this.result.length === 0) throw "no doujin find in the result list!";
     return this.result[0];
   }
 
@@ -67,10 +67,10 @@ export async function fetchSearch(name: string): Promise<DoujinList> {
     const url = `https://nhentai.net/api/galleries/search?query=${name}`;
     const res = await fetch(url);
     if (!res.ok) {
-      throw new Error(`[nhentai]HTTP error! status: ${res.status}:${url}`);
+      throw new Error(`HTTP error! status: ${res.status}:${url}`);
     }
     const data = await res.json();
-    if (!data) throw `[nhentai]cannot find json data`;
+    if (!data) throw `cannot find json data`;
     return new DoujinList(data, name);
   } catch (error) {
     throw error;

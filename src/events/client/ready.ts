@@ -22,14 +22,14 @@ export default {
     await this.registerCommands();
 
     const update = () => {
-      console.log(chalk.green(`開始定時檢查更新.....`));
+      console.log(chalk.blue(`開始定時檢查更新.....`));
 
       Promise.all([
         Manhuagui.checkUpdateManhuagui(this).catch(console.error),
         hanime1A(this).catch(console.error),
         nhentai.checkup(this).catch(console.error),
       ]).then(() => {
-        console.log(chalk.yellow(`[kunkun bot]${client.user?.tag}: 檢查完成`));
+        console.log(chalk.bgBlue(`[kunkun bot]${client.user?.tag}: 檢查完成`));
       });
     };
 

@@ -30,8 +30,7 @@ export async function hanime1A(client: ExtendedClient) {
           flag = true;
         }
       } catch (error) {
-        console.error(chalk.red("[hanime1]" + error));
-        throw `[hanime1] happen error`;
+        console.error(chalk.red(`[hanime1]${error}`));
       }
     }
     if (flag) {
@@ -81,10 +80,9 @@ async function sendMessage(client: ExtendedClient, channel: Channel, hanime1: Ha
         embeds: [embed],
       });
     } else {
-      console.error(chalk.red(`[hanime1]找不到channel`));
+      throw `[hanime1]找不到channel`;
     }
   } catch (error) {
-    console.error(chalk.red("[hanime1]" + error));
     throw error;
   }
 }

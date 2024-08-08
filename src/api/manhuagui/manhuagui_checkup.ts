@@ -18,10 +18,16 @@ export async function checkUpdateManhuagui(client: ExtendedClient) {
   for (const files of folder) {
     const filePath = join(folderPath, files);
     const localData: local_subscribe = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-    const channel = await client.channels.fetch(localData.channel);
+
+    let channel = client.channels.cache.get(localData.channel);
 
     if (!channel) {
-      console.error(chalk.red(`[manhuagui]cannot find the channel`));
+      console.warn(chalk.yellow(`[nhentai]cache channel not find`));
+      const temp = await client.channels.fetch!(localData.channel);
+      if (!temp) {
+        throw `[manhuagui]cannot find the channel`;
+      }
+      channel = temp;
     }
 
     let flag: boolean = false;
@@ -38,13 +44,13 @@ export async function checkUpdateManhuagui(client: ExtendedClient) {
           flag = true;
         }
       } catch (error) {
-        console.error(chalk.red("[manhuagui]fetch manhuagui error: " + error));
+        throw `[manhuagui]${error}`;
       }
     }
 
     if (flag) {
       fs.writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
-      console.log(chalk.blue(`[manhuagui]${files}  -  檔案寫入成功!`));
+      console.log(chalk.green(`[manhuagui]${files}  -  檔案寫入成功!`));
     }
   }
 }
@@ -101,7 +107,6 @@ export async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhua
       throw `[manguagui]Invalid channel`;
     }
   } catch (error) {
-    console.error(chalk.red(`Failed to send announcement: ${error}`));
-    throw `[manhuagui] sendAnnouncenent happen error`;
+    throw `sendAnnouncenent happen error:${error}`;
   }
 }

@@ -62,9 +62,9 @@ export default {
         content: `您已成功取消訂閱漫畫 ID: ${id}`,
         ephemeral: true,
       });
+      console.log(chalk.green(`[manhuagui]${interaction.guildId} rm ${id}`));
     } catch (error) {
-      console.error(chalk.red(`[manhuagui]rm error:`));
-      throw error;
+      throw `[manhuagui]${error}`;
     }
   },
 };

@@ -61,9 +61,8 @@ export default {
         content: `已經將${artist}加入訂閱列表`,
         ephemeral: true,
       });
-      console.log(chalk.green(`[nhentai]add ${artist} to ${interaction.guildId}.json`));
+      console.log(chalk.green(`[nhentai]${interaction.guildId} sub ${artist}`));
     } catch (error) {
-      console.error(chalk.red(`[nhentai]${interaction.user.displayName} cannot fetch the artist web data`));
       throw `[nhnetai]${error}`;
     }
   },

@@ -25,10 +25,9 @@ export async function checkup(client: ExtendedClient): Promise<void> {
         console.log(chalk.green(`[nhentai]the cach is empty,try to fetch channel.....`));
         const fetchChannel = await client.channels.fetch(localData.channel);
         if (!fetchChannel) {
-          throw `[nhentai]cannot find serve channel`;
+          throw `cannot find serve channel`;
         }
         channel = fetchChannel;
-        console.log(chalk.blue(`[nhentai]fetch channel success!`));
       }
 
       for (const entry of localData.sub) {
@@ -43,14 +42,14 @@ export async function checkup(client: ExtendedClient): Promise<void> {
       }
       writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
     } catch (error) {
-      throw error;
+      throw new Error(`[nhentai]${error}`);
     }
   }
 }
 
 async function sendAnnouncement(doujin: Doujin, channel: Channel, artist: string): Promise<void> {
   try {
-    if (!channel.isTextBased()) throw `[nhentai]channel type error`;
+    if (!channel.isTextBased()) throw `channel type error`;
 
     const coverType = doujin.images.cover.t === "p" ? "png" : doujin.images.cover.t === "j" ? "jpg" : "gif";
 
@@ -64,6 +63,7 @@ async function sendAnnouncement(doujin: Doujin, channel: Channel, artist: string
       .setDescription("- 使用/sub_nhentai 還訂閱更多作者\n- 或是使用/rm_nhentai來取消訂閱")
       .setThumbnail("https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg")
       .setImage(`https://t3.nhentai.net/galleries/${doujin.media_id}/cover.${coverType}`)
+      .setTimestamp(Date.now())
       .addFields(
         {
           name: "🛜 原網站",

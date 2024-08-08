@@ -1,8 +1,10 @@
-import { ExtendedClient } from "@/types/ExtendedClient";
-import type { local_subscribe } from "@/types/subData";
 import chalk from "chalk";
+
 import { ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 import { existsSync, readFileSync, writeFileSync } from "fs";
+import { ExtendedClient } from "@/types/ExtendedClient";
+
+import type { local_subscribe } from "@/types/subData";
 
 export default {
   data: new SlashCommandBuilder()
@@ -21,7 +23,7 @@ export default {
           content: "該伺服器未訂閱任何作者",
           ephemeral: true,
         });
-        console.warn(chalk.red(`[nhentai]${interaction.user.displayName}伺服器未找到資料 - ${artist}`));
+        console.warn(chalk.yellow(`[nhentai]${interaction.user.displayName}伺服器未找到資料 - ${artist}`));
         return;
       }
 
@@ -35,7 +37,7 @@ export default {
           content: "該伺服器未訂閱此作者",
           ephemeral: true,
         });
-        console.warn(chalk.red(`[nhentai]${interaction.user.displayName} 伺服器未找到作者 - ${artist}`));
+        console.warn(chalk.yellow(`[nhentai]${interaction.user.displayName} 伺服器未找到作者 - ${artist}`));
         return;
       }
 
@@ -44,6 +46,7 @@ export default {
         content: `你已成功取消訂閱${artist}`,
         ephemeral: true,
       });
+      console.log(chalk.green(`[nhentai]${interaction.guildId} rm ${artist}`));
     } catch (error) {
       throw "[nehntai]" + error;
     }
