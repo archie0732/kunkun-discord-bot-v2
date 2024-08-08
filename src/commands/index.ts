@@ -13,6 +13,7 @@ import nhentai_rm from "./nehentai/nhentai_rm";
 import draw from "./tools/draw";
 import ping from "./tools/ping";
 import setChannel from "./tools/setChannel";
+import archie_getJson from "./tools/getJson";
 
 export interface Command {
   data: SlashCommandBuilder;
@@ -29,4 +30,5 @@ export default [
   draw,
   ping,
   setChannel,
+  archie_getJson,
 ] as Command[];
