@@ -19,13 +19,12 @@ command:
         throw ``
 
 
+chalk:
+    red: error on run func
+    yellow: user do something bot may crash
+    blue: checkupdate
+    green: run func suceess 
+
 https://nhentai.net/api/galleries/search?query=yan-yam
 
-ssh kamiya@61.58.107.206 -p 23 :4047
 
-
-scp -P 23 ./.env kamiya@61.58.107.206:~/gh/kunkun-discord-bot-v2 
-
-pm2 list => 看編號
-pm2 restart 2 => 編號
-pm2 log 2  => 看狀態

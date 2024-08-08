@@ -61,11 +61,13 @@ export default {
       writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
       console.log(chalk.blue(`[hanime1]${interaction.guildId}.json - 檔案寫入完成`));
       await interaction.editReply({
-        content: `[hanime1]${tag?.replace(/%20/g, " ")} - 訂閱成功!`,
+        content: `您已經訂閱${tag?.replace(/%20/g, " ")} 成功!`,
       });
     } catch (error) {
-      console.error(`[hanime1]add error:`);
-      throw error;
+      console.error(`[hanime1]add error:${error}`);
+      await interaction.editReply({
+        content:`訂閱失敗，可能是hanime1維修中或是您的關鍵字${tag}有誤`
+      })
     }
   },
 };

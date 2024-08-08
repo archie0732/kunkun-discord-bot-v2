@@ -17,7 +17,6 @@ export default {
     try {
       console.log(`${interaction.user.tag} using command -- ${interaction.commandName}`);
       await command.execute(interaction, this);
-      console.log(chalk.blue(`run command sucess!`));
     } catch (error) {
       console.error(chalk.red(error));
       await interaction.reply({
