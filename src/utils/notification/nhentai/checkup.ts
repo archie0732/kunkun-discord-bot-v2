@@ -34,6 +34,7 @@ export async function checkup(client: ExtendedClient): Promise<void> {
         const doujin = await nhentai.getLastTagAPI(entry.id);
 
         if (doujin.title.pretty !== entry.last_up) {
+          console.log(chalk.blue(`[nhentai]${entry.name} new upload - ${doujin.title.japanese}`));
           entry.last_up = doujin.title.pretty;
           entry.id = doujin.id.toString();
           entry.other = "https://nhentai.net/g/" + doujin.id.toString();

@@ -39,7 +39,7 @@ export async function checkUpdateManhuagui(client: ExtendedClient) {
         if (entry.last_up !== manhuagui.status.lastest_chapter) {
           entry.last_up = manhuagui.status.lastest_chapter;
           entry.other = manhuagui.status.chapter_url;
-          console.log(`[manhuagui]${manhuagui.title.Ch}  -  更新了: ${manhuagui.status.lastest_chapter}`);
+          console.log(chalk.blue(`[manhuagui]${manhuagui.title.Ch} new upload -  ${manhuagui.status.lastest_chapter}`));
           await sendAnnouncement(client, manhuagui, channel!);
           flag = true;
         }

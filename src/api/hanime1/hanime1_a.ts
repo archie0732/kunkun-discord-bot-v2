@@ -23,7 +23,7 @@ export async function hanime1A(client: ExtendedClient) {
       try {
         const hanime1 = await hanime1_fetch(entry.name!);
         if (hanime1.id !== entry.id) {
-          console.log(chalk.yellow(`[hanime1]${hanime1.tag} - 更新了: ${hanime1.title}`));
+          console.log(chalk.blue(`[hanime1]${hanime1.tag} new upload - ${hanime1.title}`));
           await sendMessage(client, channel!, hanime1);
           entry.last_up = hanime1.title;
           entry.id = hanime1.id;
