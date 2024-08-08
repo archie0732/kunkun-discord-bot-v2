@@ -1,6 +1,6 @@
 {
   "name": "kunkun-bot-v2",
-  "version": "2.3.4",
+  "version": "2.3.12",
   "description": "",
   "main": "dist/bot.js",
   "scripts": {

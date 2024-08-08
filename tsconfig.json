@@ -21,7 +21,7 @@
       "~/*": ["./*"]
     },
 
-    // Best practices
+    // Best practices a
     "strict": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
