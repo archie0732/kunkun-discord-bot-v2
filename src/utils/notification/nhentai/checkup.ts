@@ -59,7 +59,7 @@ async function sendAnnouncement(doujin: Doujin, channel: Channel, artist: string
       tags.push(val.name);
     });
     const embeds = new EmbedBuilder()
-      .setTitle(`${artist}更新了${doujin.title.japanese}`)
+      .setTitle(`${doujin.title.japanese}`)
       .setURL(`https://nhentai.net/g/${doujin.id}`)
       .setDescription("- 使用/sub_nhentai 還訂閱更多作者\n- 或是使用/rm_nhentai來取消訂閱")
       .setThumbnail("https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg")

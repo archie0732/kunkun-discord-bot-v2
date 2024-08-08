@@ -46,7 +46,7 @@ async function sendMessage(client: ExtendedClient, channel: Channel, hanime1: Ha
       name: `${client.user?.tag} - 被乙骨操作的機器人`,
       iconURL: client.user?.displayAvatarURL(),
     })
-    .setTitle(`[hanime1]您訂閱的 ${hanime1.tag} - 更新了新的內容: ${hanime1.title}`)
+    .setTitle(`[${hanime1.tag}]${hanime1.title}`)
     .setURL(hanime1.video_url)
     .setDescription(
       `- 使用 </sub_hanime1:1268195537287381024> 訂閱更多作者或標籤\n- 或是用 </rm_hanime1:1268195537287381023> 來取消訂閱`
@@ -66,6 +66,7 @@ async function sendMessage(client: ExtendedClient, channel: Channel, hanime1: Ha
       }
     )
     .setImage(hanime1.cover_url)
+    .setTimestamp(Date.now())
     .setFooter({
       text: `archie0732's kunkun-bot v2 with TypeScript`,
     });
