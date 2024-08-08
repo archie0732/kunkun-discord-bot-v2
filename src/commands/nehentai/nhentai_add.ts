@@ -6,7 +6,8 @@ import { ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandStringOpt
 import { existsSync, readFileSync, writeFileSync } from "fs";
 
 import type { local_subscribe } from "@/types/subData";
-import type { archieCache } from "@/types/cacheData";
+import type { archieCache } from "@/types/Archiecache";
+import { url } from "inspector";
 
 export default {
   data: new SlashCommandBuilder()
@@ -38,11 +39,19 @@ export default {
         return;
       }
       const cachePath = `./resource/cache/nhentai/${artist}.json`;
-      let tagID: string;
+      let tagID;
       if (!existsSync(cachePath)) {
         const doujinList = await nhentai.fetchSearch(artist);
         tagID = doujinList.fetchTagID().id.toString();
-        writeFileSync(cachePath, JSON.stringify(doujinList.fetchTagID(), null, 2), "utf-8");
+        const doujin = doujinList.fetchTagID();
+        const archiecache = {
+          id: doujin.id.toString(),
+          name: doujin.name,
+          type: doujin.type,
+          url: doujin.url,
+          count: doujin.count,
+        };
+        writeFileSync(cachePath, JSON.stringify(archiecache, null, 2), "utf-8");
       } else {
         const doujinList: archieCache = JSON.parse(readFileSync(cachePath, "utf-8"));
         tagID = doujinList.id;
