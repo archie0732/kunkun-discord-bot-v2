@@ -63,8 +63,7 @@ export async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhua
     })
     .setTitle(`${manhuagui.title.Ch} 更新至 ${manhuagui.status.lastest_chapter}`)
     .setURL(`${manhuagui.status.chapter_url}`)
-    .setImage(manhuagui.cover)
-    .setThumbnail(`https://tw.manhuagui.com/favicon.ico`)
+    .setThumbnail(manhuagui.cover)
     .setDescription(
       `- 您可以使用 </sub_manhuagui:1268082123466739764> 來訂閱\n- 或者使用 </rm_manhuagui:1268082123466739765> 來取消訂閱`
     )
@@ -82,6 +81,11 @@ export async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhua
         inline: true,
       },
       {
+        name: `🏷️ 標籤`,
+        value: `${manhuagui.introduce.categories.join(", ")}`,
+        inline: true,
+      },
+      {
         name: `🗺️ 漫畫類型`,
         value: `${manhuagui.introduce.local_publish}`,
         inline: true,
@@ -89,10 +93,6 @@ export async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhua
       {
         name: `🔍 目前狀態`,
         value: `${manhuagui.status.now}，${manhuagui.status.date}更新到: ${manhuagui.status.lastest_chapter}`,
-      },
-      {
-        name: `🏷️ 標籤`,
-        value: `${manhuagui.introduce.categories.join(", ")}`,
       }
     )
     .setFooter({ text: `archie0732's kunkun-bot v2 with TypeScripe` });
