@@ -18,16 +18,10 @@ export async function checkUpdateManhuagui(client: ExtendedClient) {
   for (const files of folder) {
     const filePath = join(folderPath, files);
     const localData: local_subscribe = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-
-    let channel = client.channels.cache.get(localData.channel);
+    const channel = await client.channels.fetch(localData.channel);
 
     if (!channel) {
-      console.warn(chalk.yellow(`[nhentai]cache channel not find`));
-      const temp = await client.channels.fetch!(localData.channel);
-      if (!temp) {
-        throw `[manhuagui]cannot find the channel`;
-      }
-      channel = temp;
+      console.error(chalk.red(`[manhuagui]cannot find the channel`));
     }
 
     let flag: boolean = false;
@@ -39,18 +33,18 @@ export async function checkUpdateManhuagui(client: ExtendedClient) {
         if (entry.last_up !== manhuagui.status.lastest_chapter) {
           entry.last_up = manhuagui.status.lastest_chapter;
           entry.other = manhuagui.status.chapter_url;
-          console.log(chalk.blue(`[manhuagui]${manhuagui.title.Ch} new upload -  ${manhuagui.status.lastest_chapter}`));
+          console.log(`[manhuagui]${manhuagui.title.Ch}  -  更新了: ${manhuagui.status.lastest_chapter}`);
           await sendAnnouncement(client, manhuagui, channel!);
           flag = true;
         }
       } catch (error) {
-        throw `[manhuagui]${error}`;
+        console.error(chalk.red("[manhuagui]fetch manhuagui error: " + error));
       }
     }
 
     if (flag) {
       fs.writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
-      console.log(chalk.green(`[manhuagui]${files}  -  檔案寫入成功!`));
+      console.log(chalk.blue(`[manhuagui]${files}  -  檔案寫入成功!`));
     }
   }
 }
@@ -63,7 +57,8 @@ export async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhua
     })
     .setTitle(`${manhuagui.title.Ch} 更新至 ${manhuagui.status.lastest_chapter}`)
     .setURL(`${manhuagui.status.chapter_url}`)
-    .setThumbnail(manhuagui.cover)
+    .setImage(manhuagui.cover)
+    .setThumbnail(`https://tw.manhuagui.com/favicon.ico`)
     .setDescription(
       `- 您可以使用 </sub_manhuagui:1268082123466739764> 來訂閱\n- 或者使用 </rm_manhuagui:1268082123466739765> 來取消訂閱`
     )
@@ -81,11 +76,6 @@ export async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhua
         inline: true,
       },
       {
-        name: `🏷️ 標籤`,
-        value: `${manhuagui.introduce.categories.join(", ")}`,
-        inline: true,
-      },
-      {
         name: `🗺️ 漫畫類型`,
         value: `${manhuagui.introduce.local_publish}`,
         inline: true,
@@ -93,6 +83,10 @@ export async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhua
       {
         name: `🔍 目前狀態`,
         value: `${manhuagui.status.now}，${manhuagui.status.date}更新到: ${manhuagui.status.lastest_chapter}`,
+      },
+      {
+        name: `🏷️ 標籤`,
+        value: `${manhuagui.introduce.categories.join(", ")}`,
       }
     )
     .setFooter({ text: `archie0732's kunkun-bot v2 with TypeScripe` });
@@ -107,6 +101,7 @@ export async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhua
       throw `[manguagui]Invalid channel`;
     }
   } catch (error) {
-    throw `sendAnnouncenent happen error:${error}`;
+    console.error(chalk.red(`Failed to send announcement: ${error}`));
+    throw `[manhuagui] sendAnnouncenent happen error`;
   }
 }

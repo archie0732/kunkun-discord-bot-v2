@@ -21,7 +21,7 @@ export default {
       const filePath = `./resource/hanime1/${interaction.guildId}.json`;
 
       if (!existsSync(filePath)) {
-        console.error(chalk.yellow(`[hanime1]${interaction.user.displayName} - 伺服器未查詢到資料`));
+        console.error(chalk.red(`[hanime1]${interaction.user.displayName} - 伺服器未查詢到資料`));
         await interaction.reply({
           content: `該伺服器尚未訂閱任何標籤`,
           ephemeral: true,
@@ -34,7 +34,7 @@ export default {
       localData.sub = localData.sub.filter((value) => value.name !== tag);
 
       if (localData.sub.length === originalLength) {
-        console.log(chalk.yellow(`[hanime1]${interaction.user.displayName} - 未找到tag`));
+        console.log(chalk.red(`[hanime1]${interaction.user.displayName} - 未找到tag`));
         await interaction.reply({
           content: `伺服器未定閱此標籤`,
           ephemeral: true,
@@ -47,9 +47,9 @@ export default {
         content: `您已成功取消訂閱${tag}`,
         ephemeral: true,
       });
-      console.log(chalk.green(`${interaction.guildId} rm ${tag}`))
     } catch (error) {
-      throw `[hnaime1]${error}`;
+      console.error(chalk.red(`[hanime1]rm error:`));
+      throw error;
     }
   },
 };

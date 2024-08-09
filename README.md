@@ -1,2 +1,0 @@
-fk u discord.js
-fkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk

@@ -74,7 +74,6 @@ export default {
         content: `成功訂閱漫畫 : ${manhuagui.title.Ch}`,
         ephemeral: true,
       });
-      console.log(chalk.green(`[manhuagui]${interaction.guildId} sub ${manhuagui.title.Ch}`));
     } catch (error) {
       console.error(chalk.red(`[manhuagui]add error:`));
       throw error;
