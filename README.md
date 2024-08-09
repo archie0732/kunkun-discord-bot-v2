@@ -36,7 +36,7 @@ remove cmd: rm_<webName>
 |v2.2 ~ v2.3|2024-08|fk u ts|
 |v2.3.1 ~ v2.3.13|2024-08-08|final i finish it!!|
 |v2.3.14|2024-08-09|i fk up! i miss my local data!|
-|v2.3.12|2024-08-09|i back my data and do again fk!|
+|v2.3.12|2024-08-09|i turn back my data and do again fk!|
 |v2.4.01|2024-08-09|finish|
 
 this bot is shxt, i hate it!
