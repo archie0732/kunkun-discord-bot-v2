@@ -24,7 +24,7 @@ export default {
       const filePath = `./resource/hanime1/${interaction.guildId}.json`;
 
       if (!hanime1) {
-        console.error(`[hanime1]${tag} - 抓取資料失敗`);
+        console.error(chalk.red(`[hanime1]${tag} - 抓取資料失敗`));
         await interaction.editReply({
           content: "抓取hanime1 資料時發生錯誤",
         });
@@ -46,7 +46,7 @@ export default {
         await interaction.editReply({
           content: "此標籤已在訂閱列表中",
         });
-        console.log(chalk.red(`[hanime1]${interaction.user.username} - 重複訂閱: ${tag}`));
+        console.log(chalk.yellow(`[hanime1]${interaction.user.username} - 重複訂閱: ${tag}`));
         return;
       }
 
@@ -59,13 +59,16 @@ export default {
       });
 
       writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
-      console.log(chalk.blue(`[hanime1]${interaction.guildId}.json - 檔案寫入完成`));
+      console.log(chalk.green(`[hanime1]${interaction.guild?.name} 訂閱${tag}`));
       await interaction.editReply({
-        content: `[hanime1]${tag?.replace(/%20/g, " ")} - 訂閱成功!`,
+        content: `您已經訂閱${tag?.replace(/%20/g, " ")} 成功!`,
       });
+      console.log(chalk.green(`[hanime1]${interaction.guildId} sub ${tag}`));
     } catch (error) {
-      console.error(`[hanime1]add error:`);
-      throw error;
+      console.error(chalk.red(`[hanime1]add error:${error}`));
+      await interaction.editReply({
+        content:`訂閱失敗，可能是hanime1維修中或是您的關鍵字${tag}有誤`
+      })
     }
   },
 };

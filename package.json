@@ -1,6 +1,6 @@
 {
   "name": "kunkun-bot-v2",
-  "version": "2.3.5",
+  "version": "2.3.12",
   "description": "",
   "main": "dist/bot.js",
   "scripts": {
@@ -16,6 +16,7 @@
     "cheerio": "^1.0.0-rc.12",
     "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2",
     "pupeteer": "^0.0.1",
     "puppeteer": "^22.12.1"
   },

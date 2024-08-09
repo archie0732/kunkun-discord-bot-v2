@@ -23,15 +23,14 @@ export async function hanime1A(client: ExtendedClient) {
       try {
         const hanime1 = await hanime1_fetch(entry.name!);
         if (hanime1.id !== entry.id) {
-          console.log(chalk.yellow(`[hanime1]${hanime1.tag} - 更新了: ${hanime1.title}`));
+          console.log(chalk.blue(`[hanime1]${hanime1.tag} new upload - ${hanime1.title}`));
           await sendMessage(client, channel!, hanime1);
           entry.last_up = hanime1.title;
           entry.id = hanime1.id;
           flag = true;
         }
       } catch (error) {
-        console.error(chalk.red("[hanime1]" + error));
-        throw `[hanime1] happen error`;
+        console.error(chalk.red(`[hanime1]${error}`));
       }
     }
     if (flag) {
@@ -47,7 +46,7 @@ async function sendMessage(client: ExtendedClient, channel: Channel, hanime1: Ha
       name: `${client.user?.tag} - 被乙骨操作的機器人`,
       iconURL: client.user?.displayAvatarURL(),
     })
-    .setTitle(`[hanime1]您訂閱的 ${hanime1.tag} - 更新了新的內容: ${hanime1.title}`)
+    .setTitle(`[${hanime1.tag}]${hanime1.title}`)
     .setURL(hanime1.video_url)
     .setDescription(
       `- 使用 </sub_hanime1:1268195537287381024> 訂閱更多作者或標籤\n- 或是用 </rm_hanime1:1268195537287381023> 來取消訂閱`
@@ -67,6 +66,7 @@ async function sendMessage(client: ExtendedClient, channel: Channel, hanime1: Ha
       }
     )
     .setImage(hanime1.cover_url)
+    .setTimestamp(Date.now())
     .setFooter({
       text: `archie0732's kunkun-bot v2 with TypeScript`,
     });
@@ -81,10 +81,9 @@ async function sendMessage(client: ExtendedClient, channel: Channel, hanime1: Ha
         embeds: [embed],
       });
     } else {
-      console.error(chalk.red(`[hanime1]找不到channel`));
+      throw `[hanime1]找不到channel`;
     }
   } catch (error) {
-    console.error(chalk.red("[hanime1]" + error));
     throw error;
   }
 }

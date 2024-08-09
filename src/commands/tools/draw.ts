@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder } from "discord.js";
 import { ExtendedClient } from "@/types/ExtendedClient";
 
 import chalk from "chalk";
@@ -8,9 +8,13 @@ export default {
     .setName(`draw2486`)
     .setNameLocalization(`zh-TW`, "抽取2486")
     .setDescription(`抽在群組的一人(不包含機器人)`)
-    .setNameLocalization(`zh-CN`, "抽取-2486"),
+    .setNameLocalization(`zh-CN`, "抽取-2486")
+    .addBooleanOption(
+      new SlashCommandBooleanOption().setName("tag").setDescription("是否要標記被抽中的人，預設為false")
+    ),
 
   async execute(interaction: ChatInputCommandInteraction, client: ExtendedClient) {
+    const opption: boolean | null = interaction.options.getBoolean("tag");
     const member = await interaction.guild?.members.fetch();
 
     if (!member) {
@@ -52,8 +56,10 @@ export default {
         text: `archie0732's kunkun-bot v2 with TypeScript`,
       });
 
+    const tagPerson = opption ? `<@${randonMember?.user.id}>` : randonMember?.displayName;
+
     await interaction.reply({
-      content: `<@${randonMember?.user.id}> 你被抽中了!`,
+      content: `${tagPerson} 你被抽中了!`,
       embeds: [embed],
     });
   },
