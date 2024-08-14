@@ -14,6 +14,7 @@ import draw from "./tools/draw";
 import ping from "./tools/ping";
 import setChannel from "./tools/setChannel";
 import archie_getJson from "./tools/getJson";
+import checkUpdate from "./tools/checkUpdate";
 
 export interface Command {
   data: SlashCommandBuilder;
@@ -31,4 +32,5 @@ export default [
   ping,
   setChannel,
   archie_getJson,
+  checkUpdate,
 ] as Command[];
