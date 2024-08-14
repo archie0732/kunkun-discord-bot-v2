@@ -43,7 +43,7 @@ export class DoujinList {
   fetchTagID(): Tag {
     for (const doujin of this.result) {
       for (const tag of doujin.tags) {
-        if (tag.type && tag.type === "artist" && tag.name === this.tagName) {
+        if (tag.type && tag.type === "artist" && tag.name === this.tagName.replaceAll("-", " ")) {
           return tag;
         }
       }
