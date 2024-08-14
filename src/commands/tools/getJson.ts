@@ -1,9 +1,12 @@
 import "dotenv/config";
 
-import { ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  SlashCommandBuilder,
+  SlashCommandStringOption,
+  AttachmentBuilder,
+} from "discord.js";
 import type { ExtendedClient } from "@/types/ExtendedClient";
-import type { local_subscribe } from "@/types/subData";
-import { readFileSync } from "fs";
 
 export default {
   data: new SlashCommandBuilder()
@@ -36,11 +39,11 @@ export default {
       return;
     }
     const filePath = `./resource/${dataName}/${interaction.guildId}.json`;
-    const localData: local_subscribe = JSON.parse(readFileSync(filePath, "utf-8"));
+    const file = new AttachmentBuilder(filePath);
 
-    const content = "```json\n" + JSON.stringify(localData, null, 2) + "\n```";
     await interaction.reply({
-      content: content,
+      content: "回傳資料如下:",
+      files: [file],
       ephemeral: true,
     });
   },
