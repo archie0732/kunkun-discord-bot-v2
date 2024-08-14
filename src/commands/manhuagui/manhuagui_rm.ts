@@ -15,6 +15,7 @@ export default {
     .addStringOption((option) => option.setName("id").setDescription("漫畫的ID").setRequired(true)),
 
   async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
+     if (!interaction.guildId) throw `cannot use this command in there`;
     try {
       const id = interaction.options.getString("id");
 

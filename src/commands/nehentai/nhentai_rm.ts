@@ -14,6 +14,7 @@ export default {
     .addStringOption(new SlashCommandStringOption().setName("artist").setDescription("作者名稱").setRequired(true)),
 
   async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
+     if (!interaction.guildId) throw `cannot use this command in there`;
     try {
       const artist = interaction.options.getString("artist", true);
       const filePath = `./resource/nhentai/${interaction.guildId}.json`;

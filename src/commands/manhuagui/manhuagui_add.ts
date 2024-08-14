@@ -17,6 +17,7 @@ export default {
       option.setName(`id`).setDescription(`在 https://tw.manhuagui.com/ 上的漫畫id`).setRequired(true)
     ),
   async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
+     if (!interaction.guildId) throw `cannot use this command in there`;
     try {
       const id = interaction.options.getString("id");
       if (!isNumeric(id || "")) {

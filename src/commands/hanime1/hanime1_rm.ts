@@ -16,6 +16,7 @@ export default {
     ),
 
   async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
+     if (!interaction.guildId) throw `cannot use this command in there`;
     try {
       const tag = interaction.options.getString("tag", true);
       const filePath = `./resource/hanime1/${interaction.guildId}.json`;

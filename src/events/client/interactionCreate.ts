@@ -19,10 +19,18 @@ export default {
       await command.execute(interaction, this);
     } catch (error) {
       console.error(chalk.red(error));
-      await interaction.reply({
-        content: `Something went wrong while executing this command...`,
-        ephemeral: true,
-      });
+      if (typeof error === "string") {
+        await interaction.reply({
+          content: error,
+          ephemeral: true,
+        });
+      } else {
+        await interaction.reply({
+          content: "somethhing wrong while execute this command...",
+          ephemeral: true,
+        });
+      }
+
     }
   },
 } as Event<typeof name>;

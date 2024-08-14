@@ -43,11 +43,16 @@ export class DoujinList {
   fetchTagID(): Tag {
     for (const doujin of this.result) {
       for (const tag of doujin.tags) {
-        if (tag.type && tag.type === "artist" && tag.name === this.tagName.replaceAll("-", " ")) {
+        if (
+          tag.type &&
+          tag.type === "artist" &&
+          (tag.name === this.tagName.replaceAll("-", " ") || tag.name === this.tagName)
+        ) {
           return tag;
         }
       }
     }
+    console.log(`https://nhentai.net/api/galleries/search?query=${this.tagName}`);
     throw "cannot find the tag by APIserach";
   }
 

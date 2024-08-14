@@ -17,6 +17,8 @@ export default {
   async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
     const tag = interaction.options.getString("tag")?.replace(/ /g, "%20");
 
+    if (!interaction.guildId) throw `cannot use this command in there`;
+
     try {
       await interaction.deferReply({ ephemeral: true });
 
