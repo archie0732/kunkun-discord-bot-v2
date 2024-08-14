@@ -1,5 +1,5 @@
 import { load } from "cheerio";
-import puppeteer from "puppeteer";
+import fetch from "node-fetch";
 
 export type Hanime1 = {
   title: string;
@@ -14,14 +14,9 @@ export async function hanime1_fetch(tag: string): Promise<Hanime1> {
   try {
     const url = "https://hanime1.me/search?query=" + tag;
 
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    );
-    await page.goto(url, { waitUntil: "networkidle2" });
-    const html = await page.content();
-    await browser.close();
+    const res = await fetch(url);
+    const html = await res.text();
+
     const $ = load(html);
 
     const video_url = $("a.overlay").attr("href");
