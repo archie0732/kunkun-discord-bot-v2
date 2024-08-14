@@ -1,7 +1,11 @@
 .env
 dist/
 node_modules/
-resource/
+
+resource/cache/nhentai/*
+resource/hanime1/*
+resource/manhuagui/*
+resource/nhentai/*
 
 bun.lockb
 .login
