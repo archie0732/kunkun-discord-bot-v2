@@ -34,7 +34,9 @@ export async function checkup(client: ExtendedClient): Promise<void> {
         const doujin = await nhentai.getLastTagAPI(entry.id);
 
         if (doujin.title.pretty !== entry.last_up) {
-          console.log(chalk.blue(`[nhentai]${entry.name} new upload - ${doujin.title.japanese}`));
+          console.log(
+            chalk.blue(`[nhentai]${entry.name} new upload - ${doujin.title.japanese || doujin.title.pretty}`)
+          );
           entry.last_up = doujin.title.pretty;
           entry.other = "https://nhentai.net/g/" + doujin.id.toString();
           await sendAnnouncement(doujin, channel, entry.name);
@@ -58,7 +60,7 @@ async function sendAnnouncement(doujin: Doujin, channel: Channel, artist: string
       tags.push(val.name);
     });
     const embeds = new EmbedBuilder()
-      .setTitle(`${doujin.title.japanese}`)
+      .setTitle(`${doujin.title.japanese || doujin.title.pretty}`)
       .setURL(`https://nhentai.net/g/${doujin.id}`)
       .setDescription("- 使用/sub_nhentai 還訂閱更多作者\n- 或是使用/rm_nhentai來取消訂閱")
       .setThumbnail("https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg")
@@ -100,7 +102,9 @@ async function sendAnnouncement(doujin: Doujin, channel: Channel, artist: string
       });
 
     await channel.send({
-      content: `您在[nhentai](https://nhentai.net/)訂閱的 [${artist}](https://nhentai.net/artist/${artist})更新了[${doujin.title.pretty}](https://nhentai.net/g/${doujin.id})`,
+      content: `您在[nhentai](https://nhentai.net/)訂閱的 [${artist}](https://nhentai.net/artist/${artist})更新了[${
+        doujin.title.pretty || doujin.id
+      }](https://nhentai.net/g/${doujin.id})`,
       embeds: [embeds],
     });
   } catch (error) {
