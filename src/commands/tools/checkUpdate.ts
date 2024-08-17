@@ -1,5 +1,5 @@
 import { hanime1A } from "@/api/hanime1/hanime1_a";
-import nhentai from "@/utils/notification/nhentai";
+import nhentai from "@/notification/nhentai";
 import type { ExtendedClient } from "@/types/ExtendedClient";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import manhuagui from "@/api/manhuagui";

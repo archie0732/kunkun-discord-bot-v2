@@ -2,8 +2,9 @@ import { Events } from "discord.js";
 import { hanime1A } from "@/api/hanime1/hanime1_a";
 
 import Manhuagui from "@/api/manhuagui";
-import nhentai from "@/utils/notification/nhentai";
+import nhentai from "@/notification/nhentai";
 import chalk from "chalk";
+import utils from "@/utils";
 
 import type { Event } from "@/events";
 
@@ -22,7 +23,7 @@ export default {
     await this.registerCommands();
 
     const update = () => {
-      console.log(chalk.blue(`開始定時檢查更新.....`));
+      console.log(chalk.blue(`${utils.getNowTime()} 開始定時檢查更新.....`));
 
       Promise.all([
         Manhuagui.checkUpdateManhuagui(this).catch(console.error),
