@@ -23,12 +23,26 @@ export default {
     .setName(`sub_nhentai`)
     .setNameLocalization("zh-TW", "訂閱nhentai")
     .setDescription(`訂閱nhentai作者，當有新作時發出通知`)
-    .addStringOption(new SlashCommandStringOption().setName("artist").setDescription("作者名稱").setRequired(true)),
+    .addStringOption(new SlashCommandStringOption().setName("artist").setDescription("作者名稱").setRequired(true))
+    .addStringOption(
+      new SlashCommandStringOption()
+        .setName("language")
+        .setDescription("避免重複通知相同本子")
+        .setChoices(
+          { name: "中文", value: "chinese" },
+          { name: "英文", value: "english" },
+          { name: "日文", value: "japanese" }
+        )
+        .setRequired(true)
+    ),
 
   async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
-     if (!interaction.guildId) throw `cannot use this command in there`;
+    if (!interaction.guildId) throw `cannot use this command in there`;
+
     const artist = interaction.options.getString("artist", true).replaceAll(" ", "-");
     const filePath = `./resource/nhentai/${interaction.guildId}.json`;
+    const language = interaction.options.getString("language", true);
+
     let localData: local_subscribe;
     if (!existsSync(filePath)) {
       localData = {
@@ -71,7 +85,7 @@ export default {
       localData.sub.push({
         name: artist,
         id: tagID,
-        status: "",
+        status: language,
         last_up: doujin.title.pretty,
         other: "https://nhentai.net/g/" + doujin.id.toString(),
       });

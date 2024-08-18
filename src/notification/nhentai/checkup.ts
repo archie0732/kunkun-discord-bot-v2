@@ -33,7 +33,7 @@ export async function checkup(client: ExtendedClient): Promise<void> {
       for (const entry of localData.sub) {
         const doujin = await nhentai.getLastTagAPI(entry.id);
 
-        if (doujin.title.pretty !== entry.last_up) {
+        if (doujin.title.pretty !== entry.last_up && doujin.tags.some((val) => val.name === entry.status)) {
           console.log(
             chalk.blue(`[nhentai]${entry.name} new upload - ${doujin.title.japanese || doujin.title.pretty}`)
           );
@@ -62,7 +62,9 @@ async function sendAnnouncement(doujin: Doujin, channel: Channel, artist: string
     const embeds = new EmbedBuilder()
       .setTitle(`${doujin.title.japanese || doujin.title.pretty}`)
       .setURL(`https://nhentai.net/g/${doujin.id}`)
-      .setDescription("- 使用/sub_nhentai 還訂閱更多作者\n- 或是使用/rm_nhentai來取消訂閱")
+      .setDescription(
+        "- 使用</sub_nhentai: 1271034447130791989> 還訂閱更多作者\n- 或是使用</rm_nhentai: 1268082123466739765>來取消訂閱"
+      )
       .setThumbnail("https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg")
       .setImage(`https://t3.nhentai.net/galleries/${doujin.media_id}/cover.${coverType}`)
       .setTimestamp(Date.now())
