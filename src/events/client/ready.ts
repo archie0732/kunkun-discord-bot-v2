@@ -35,6 +35,6 @@ export default {
     };
 
     update();
-    setInterval(() => void update(), 600_000);
+    setInterval(() => void update(), 1200_000);
   },
 } as Event<typeof name>;
