@@ -1,5 +1,7 @@
 # kun-kun discord bot v2
 
+[使用方法](./howToUse.md)
+
 ## command
 
 - sub
