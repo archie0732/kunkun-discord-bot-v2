@@ -41,7 +41,7 @@ export default {
 
     const artist = interaction.options.getString("artist", true).replaceAll(" ", "-");
     const filePath = `./resource/nhentai/${interaction.guildId}.json`;
-    const language = interaction.options.getString("language", true);
+    const language = interaction.options.getString("language") || "chinese";
 
     let localData: local_subscribe;
     if (!existsSync(filePath)) {
