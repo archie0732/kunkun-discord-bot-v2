@@ -37,7 +37,7 @@ export default {
       return;
     }
 
-    const randonMember = member.random();
+    const randonMember = nonBotMembers.random();
 
     const embed = new EmbedBuilder()
       .setAuthor({
@@ -53,7 +53,7 @@ export default {
           "https://memeprod.sgp1.digitaloceanspaces.com/user-template/48af98fc5cf6e34cf90c46adeb6e0ce5.png"
       )
       .setFooter({
-        text: `archie0732's kunkun-bot v2 with TypeScript`,
+        text: `archie0732's kunkun-bot v2 with ts`,
       });
 
     const tagPerson = opption ? `<@${randonMember?.user.id}>` : randonMember?.displayName;
