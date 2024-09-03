@@ -20,7 +20,7 @@ export default {
       status: "online",
     });
 
-    await this.registerCommands();
+    await this.registerGCommands();
 
     const update = () => {
       console.log(chalk.blue(`${utils.getNowTime()} 開始定時檢查更新.....`));

@@ -35,6 +35,15 @@ export class ExtendedClient extends Client {
     }
   }
 
+  async registerGCommands() {
+    if (!this.application) return;
+
+    // 將指令註冊為全域指令
+    await this.application.commands.set(this.commands.map((c) => c.data.toJSON()));
+
+    console.log("Successfully registered global commands.");
+  }
+
   async registerCommands() {
     const rest = new REST({ version: "10" }).setToken(process.env["DEV_TOKEN"] as string);
 
