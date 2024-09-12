@@ -1,10 +1,5 @@
-import {
-  ChatInputCommandInteraction,
-  SlashCommandBuilder,
-  SlashCommandStringOption,
-} from "discord.js";
+import { SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { ExtendedClient } from "@/types/ExtendedClient";
 import { isNumeric } from "@/utils/isNumeric";
 
 import chalk from "chalk";
