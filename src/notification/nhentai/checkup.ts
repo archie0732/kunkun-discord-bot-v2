@@ -1,14 +1,14 @@
+import { EmbedBuilder } from "discord.js";
+import { readdirSync, readFileSync, writeFileSync } from "fs";
+import { join } from "path";
+
 import nhentai from "@/api/nhentai";
-import chalk from "chalk";
+import logger from "@/utils/logger";
 
 import type { ExtendedClient } from "@/types/ExtendedClient";
 import type { local_subscribe } from "@/types/subData";
 import type { Channel } from "discord.js";
 import type { Doujin } from "@/api/nhentai/tagAPI";
-
-import { EmbedBuilder } from "discord.js";
-import { readdirSync, readFileSync, writeFileSync } from "fs";
-import { join } from "path";
 
 export async function checkup(client: ExtendedClient): Promise<void> {
   const folderPath = "./resource/nhentai";
@@ -16,13 +16,15 @@ export async function checkup(client: ExtendedClient): Promise<void> {
 
   for (const file of folder) {
     const filePath = join(folderPath, file);
-    const localData: local_subscribe = JSON.parse(readFileSync(filePath, "utf-8"));
+    const localData: local_subscribe = JSON.parse(
+      readFileSync(filePath, "utf-8")
+    );
 
     let channel = client.channels.cache.get(localData.channel);
 
     try {
       if (!channel) {
-        console.log(chalk.green(`[nhentai]the cach is empty,try to fetch channel.....`));
+        logger.info(`[nhentai] the cach is empty, try to fetch channel.....`);
         const fetchChannel = await client.channels.fetch(localData.channel);
         if (!fetchChannel) {
           throw `cannot find serve channel`;
@@ -33,9 +35,14 @@ export async function checkup(client: ExtendedClient): Promise<void> {
       for (const entry of localData.sub) {
         const doujin = await nhentai.getLastTagAPI(entry.id);
 
-        if (doujin.title.pretty !== entry.last_up && doujin.tags.some((val) => val.name === entry.status)) {
-          console.log(
-            chalk.blue(`[nhentai]${entry.name} new upload - ${doujin.title.japanese || doujin.title.pretty}`)
+        if (
+          doujin.title.pretty !== entry.last_up &&
+          doujin.tags.some((val) => val.name === entry.status)
+        ) {
+          logger.info(
+            `[nhentai] ${entry.name} new upload - ${
+              doujin.title.japanese || doujin.title.pretty
+            }`
           );
           entry.last_up = doujin.title.pretty;
           entry.other = "https://nhentai.net/g/" + doujin.id.toString();
@@ -49,11 +56,20 @@ export async function checkup(client: ExtendedClient): Promise<void> {
   }
 }
 
-async function sendAnnouncement(doujin: Doujin, channel: Channel, artist: string): Promise<void> {
+async function sendAnnouncement(
+  doujin: Doujin,
+  channel: Channel,
+  artist: string
+): Promise<void> {
   try {
     if (!channel.isTextBased()) throw `channel type error`;
 
-    const coverType = doujin.images.cover.t === "p" ? "png" : doujin.images.cover.t === "j" ? "jpg" : "gif";
+    const coverType =
+      doujin.images.cover.t === "p"
+        ? "png"
+        : doujin.images.cover.t === "j"
+        ? "jpg"
+        : "gif";
 
     const tags: string[] = [];
     doujin.tags.forEach((val, _) => {
@@ -65,8 +81,12 @@ async function sendAnnouncement(doujin: Doujin, channel: Channel, artist: string
       .setDescription(
         "- 使用</sub_nhentai: 1271034447130791989> 還訂閱更多作者\n- 或是使用</rm_nhentai: 1268082123466739765>來取消訂閱"
       )
-      .setThumbnail("https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg")
-      .setImage(`https://t3.nhentai.net/galleries/${doujin.media_id}/cover.${coverType}`)
+      .setThumbnail(
+        "https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg"
+      )
+      .setImage(
+        `https://t3.nhentai.net/galleries/${doujin.media_id}/cover.${coverType}`
+      )
       .setTimestamp(Date.now())
       .addFields(
         {

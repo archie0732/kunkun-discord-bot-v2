@@ -1,6 +1,12 @@
+import {
+  ChannelType,
+  ChatInputCommandInteraction,
+  SlashCommandBuilder,
+} from "discord.js";
 import { readFileSync, writeFileSync } from "fs";
 import { ExtendedClient } from "@/types/ExtendedClient";
-import { ChannelType, ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+
+import logger from "@/utils/logger";
 
 import type { local_subscribe } from "@/types/subData";
 
@@ -25,7 +31,9 @@ export default {
         )
         .setRequired(true)
     )
-    .addChannelOption((optoin) => optoin.setName(`channel`).setDescription(`要移去的頻道`).setRequired(true)),
+    .addChannelOption((optoin) =>
+      optoin.setName(`channel`).setDescription(`要移去的頻道`).setRequired(true)
+    ),
 
   async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
     const option = interaction.options.getString(`option`);
@@ -38,8 +46,10 @@ export default {
       return;
     }
     const filePath = `./resource/${option}/${interaction.guildId}.json`;
-    const localData: local_subscribe = JSON.parse(readFileSync(filePath, "utf-8"));
-    console.debug(filePath);
+    const localData: local_subscribe = JSON.parse(
+      readFileSync(filePath, "utf-8")
+    );
+    logger.trace(filePath);
     localData.channel = channel.id;
     writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
     await interaction.reply({

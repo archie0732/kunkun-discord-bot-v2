@@ -1,16 +1,24 @@
-import chalk from "chalk";
-import { ExtendedClient } from "@/types/ExtendedClient";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ExtendedClient } from "@/types/ExtendedClient";
+
+import logger from "@/utils/logger";
 
 export default {
-  data: new SlashCommandBuilder().setName(`ping`).setDescription(`檢測機器人延遲`),
+  data: new SlashCommandBuilder()
+    .setName(`ping`)
+    .setDescription(`檢測機器人延遲`),
 
-  async execute(interaction: ChatInputCommandInteraction, client: ExtendedClient) {
+  async execute(
+    interaction: ChatInputCommandInteraction,
+    client: ExtendedClient
+  ) {
     try {
       await interaction.deferReply({ fetchReply: true });
       const message = await interaction.fetchReply();
 
-      const sendMessage = `🔍 API Latency: ${client.ws.ping}ms\n🛜 Client Ping: ${
+      const sendMessage = `🔍 API Latency: ${
+        client.ws.ping
+      }ms\n🛜 Client Ping: ${
         message.createdTimestamp - interaction.createdTimestamp
       }ms`;
 
@@ -18,8 +26,7 @@ export default {
         content: sendMessage,
       });
     } catch (error) {
-      console.error(chalk.red(`[kunkun]ping error`));
-      throw error;
+      logger.error(`[kunkun]ping error`, error);
     }
   },
 };

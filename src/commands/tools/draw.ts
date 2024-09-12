@@ -1,7 +1,12 @@
-import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  SlashCommandBooleanOption,
+  SlashCommandBuilder,
+} from "discord.js";
 import { ExtendedClient } from "@/types/ExtendedClient";
 
-import chalk from "chalk";
+import logger from "@/utils/logger";
 
 export default {
   data: new SlashCommandBuilder()
@@ -10,10 +15,15 @@ export default {
     .setDescription(`抽在群組的一人(不包含機器人)`)
     .setNameLocalization(`zh-CN`, "抽取-2486")
     .addBooleanOption(
-      new SlashCommandBooleanOption().setName("tag").setDescription("是否要標記被抽中的人，預設為false")
+      new SlashCommandBooleanOption()
+        .setName("tag")
+        .setDescription("是否要標記被抽中的人，預設為false")
     ),
 
-  async execute(interaction: ChatInputCommandInteraction, client: ExtendedClient) {
+  async execute(
+    interaction: ChatInputCommandInteraction,
+    client: ExtendedClient
+  ) {
     const opption: boolean | null = interaction.options.getBoolean("tag");
     const member = await interaction.guild?.members.fetch();
 
@@ -22,7 +32,7 @@ export default {
         content: `抓取錯誤`,
         ephemeral: true,
       });
-      console.log(chalk.red(`${interaction.user.displayName} - 抓取資料`));
+      logger.error(`${interaction.user.displayName} - 抓取資料`);
       return;
     }
 
@@ -33,7 +43,7 @@ export default {
         content: `伺服器沒有人`,
         ephemeral: true,
       });
-      console.log(chalk.red(`${interaction.user.displayName} - 伺服器沒人`));
+      logger.warn(`${interaction.user.displayName} - 伺服器沒人`);
       return;
     }
 
@@ -46,7 +56,9 @@ export default {
       })
       .setTitle(`${randonMember?.user.displayName}! 羅傑說你是阿斯芭樂`)
       .setURL(`https://youtu.be/dQw4w9WgXcQ?si=aZ1j3MepifHFAfKY`)
-      .setDescription(`- 使用</draw2486:1268093679214657587> 來抽取下一位阿斯芭樂吧!`)
+      .setDescription(
+        `- 使用</draw2486:1268093679214657587> 來抽取下一位阿斯芭樂吧!`
+      )
       .setImage(`https://numeroscop.net/img/numbers/numerology/angel/2486.png`)
       .setThumbnail(
         randonMember?.user.displayAvatarURL() ||
@@ -56,7 +68,9 @@ export default {
         text: `archie0732's kunkun-bot v2 with ts`,
       });
 
-    const tagPerson = opption ? `<@${randonMember?.user.id}>` : randonMember?.displayName;
+    const tagPerson = opption
+      ? `<@${randonMember?.user.id}>`
+      : randonMember?.displayName;
 
     await interaction.reply({
       content: `${tagPerson} 你被抽中了!`,

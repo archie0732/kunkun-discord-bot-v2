@@ -1,7 +1,16 @@
-import { Client, Collection, GatewayIntentBits, REST, Routes } from "discord.js";
-import type { Command } from "@/commands";
+import {
+  Client,
+  Collection,
+  GatewayIntentBits,
+  REST,
+  Routes,
+} from "discord.js";
+
 import commands from "@/commands";
 import events from "@/events";
+import logger from "@/utils/logger";
+
+import type { Command } from "@/commands";
 import type { ClientOptions } from "discord.js";
 
 export class ExtendedClient extends Client {
@@ -35,23 +44,27 @@ export class ExtendedClient extends Client {
     }
   }
 
-  async registerGCommands() {
+  async registerGuildCommands() {
     if (!this.application) return;
 
     // 將指令註冊為全域指令
-    await this.application.commands.set(this.commands.map((c) => c.data.toJSON()));
+    await this.application.commands.set(
+      this.commands.map((c) => c.data.toJSON())
+    );
 
-    console.log("Successfully registered global commands.");
+    logger.info("Successfully registered global commands.");
   }
 
   async registerCommands() {
-    const rest = new REST({ version: "10" }).setToken(process.env["DEV_TOKEN"] as string);
+    const rest = new REST({ version: "10" }).setToken(
+      process.env["DEV_TOKEN"] as string
+    );
 
     if (process.env["REGISTER_GLOBAL_COMMANDS"] === "true") {
       await rest.put(Routes.applicationCommands(this.user!.id), {
         body: this.commands.map((c) => c.data.toJSON()),
       });
-      console.log("Successfully registered global commands.");
+      logger.info("Successfully registered global commands.");
     } else {
       const guildId = process.env["GUILD_ID"];
       if (!guildId) return;
@@ -60,7 +73,7 @@ export class ExtendedClient extends Client {
       if (!guild) return;
 
       await guild.commands.set(this.commands.map((c) => c.data.toJSON()));
-      console.log("Successfully registered guild commands.");
+      logger.info("Successfully registered guild commands.");
     }
   }
 }

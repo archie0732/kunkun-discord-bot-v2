@@ -1,11 +1,10 @@
-import "dotenv/config";
-
 import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   SlashCommandStringOption,
   AttachmentBuilder,
 } from "discord.js";
+
 import type { ExtendedClient } from "@/types/ExtendedClient";
 
 export default {
@@ -24,7 +23,12 @@ export default {
         )
         .setRequired(true)
     )
-    .addStringOption(new SlashCommandStringOption().setName("password").setDescription("防止誤用").setRequired(true)),
+    .addStringOption(
+      new SlashCommandStringOption()
+        .setName("password")
+        .setDescription("防止誤用")
+        .setRequired(true)
+    ),
 
   async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
     const dataName = interaction.options.getString("data", true);
