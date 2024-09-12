@@ -1,4 +1,5 @@
 {
+  "exclude": ["eslint.config.mjs"],
   "compilerOptions": {
     // Enable latest features
     "lib": ["ESNext"],

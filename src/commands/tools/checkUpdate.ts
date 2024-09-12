@@ -56,7 +56,7 @@ export default {
       try {
         await manhuagui.checkUpdateManhuagui(client);
       } catch (error) {
-        logger.error(`[manhuagui update error] - ${error}`);
+        logger.error(`[manhuagui update error] - ${error}`, error);
         await interaction.followUp({
           content: "檢查 manhuagui 更新時發現錯誤",
           ephemeral: true,

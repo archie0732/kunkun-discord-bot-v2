@@ -1,6 +1,7 @@
 import { load } from "cheerio";
 
 import axios from "axios";
+import { ManhuaguiError } from "./error";
 
 export type Manhuagui = {
   title: {
@@ -24,9 +25,9 @@ export type Manhuagui = {
 };
 
 export async function fetchManhuagui(id: string): Promise<Manhuagui> {
-  const url = "https://tw.manhuagui.com/comic/" + id;
-
   try {
+    const url = "https://tw.manhuagui.com/comic/" + id;
+
     const response = await axios.get(url);
     const $ = load(response.data);
 
@@ -46,10 +47,17 @@ export async function fetchManhuagui(id: string): Promise<Manhuagui> {
     const status = $("li.status").find("span.red").eq(0).text();
     const date = $("li.status").find("span.red").eq(1).text();
     const chapter_url =
-      "https://tw.manhuagui.com/" + $("#chapter-list-1").find("ul[style=display:block]").find("a.status0").attr("href");
-    const lastest_chapter = $("#chapter-list-1").find("ul[style=display:block]").find("a.status0").attr("title");
+      "https://tw.manhuagui.com/" +
+      $("#chapter-list-1")
+        .find("ul[style=display:block]")
+        .find("a.status0")
+        .attr("href");
+    const lastest_chapter = $("#chapter-list-1")
+      .find("ul[style=display:block]")
+      .find("a.status0")
+      .attr("title");
 
-    const result: Manhuagui = {
+    return {
       title: {
         Ch: titleCh,
         Jp: titleJp,
@@ -69,9 +77,7 @@ export async function fetchManhuagui(id: string): Promise<Manhuagui> {
         chapter_url: chapter_url || "",
       },
     };
-
-    return result;
   } catch (error) {
-    throw `[manhuagui]fetch error: ${error}`;
+    throw new ManhuaguiError("Fetch error", id);
   }
 }

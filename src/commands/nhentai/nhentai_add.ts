@@ -1,12 +1,10 @@
-import nhentai from "@/api/nhentai";
-import chalk from "chalk";
+import { SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 
-import { ExtendedClient } from "@/types/ExtendedClient";
-import { ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import nhentai from "@/api/nhentai";
 
 import type { local_subscribe } from "@/types/subData";
-
+import type { Command } from "..";
+import logger from "@/utils/logger";
 
 interface archieCache {
   id: string;
@@ -16,14 +14,17 @@ interface archieCache {
   count: number;
 }
 
-
-
 export default {
   data: new SlashCommandBuilder()
     .setName(`sub_nhentai`)
-    .setNameLocalization("zh-TW", "訂閱nhentai")
-    .setDescription(`訂閱nhentai作者，當有新作時發出通知`)
-    .addStringOption(new SlashCommandStringOption().setName("artist").setDescription("作者名稱").setRequired(true))
+    .setNameLocalization("zh-TW", "訂閱 nhentai")
+    .setDescription(`訂閱 nhentai 作者，當有新作時發出通知`)
+    .addStringOption(
+      new SlashCommandStringOption()
+        .setName("artist")
+        .setDescription("作者名稱")
+        .setRequired(true)
+    )
     .addStringOption(
       new SlashCommandStringOption()
         .setName("language")
@@ -34,37 +35,49 @@ export default {
           { name: "日文", value: "japanese" }
         )
         .setRequired(true)
-    ),
+    )
+    .setDMPermission(false),
+  async execute(interaction, _) {
+    if (!interaction.inCachedGuild()) return;
 
-  async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
-    if (!interaction.guildId) throw `cannot use this command in there`;
+    const artist = interaction.options
+      .getString("artist", true)
+      .replaceAll(" ", "-");
+    const language = interaction.options.getString("language", true);
 
-    const artist = interaction.options.getString("artist", true).replaceAll(" ", "-");
-    const filePath = `./resource/nhentai/${interaction.guildId}.json`;
-    const language = interaction.options.getString("language") || "chinese";
+    const filePath = `./resource/nhentai/${interaction.guild.id}.json`;
 
     let localData: local_subscribe;
-    if (!existsSync(filePath)) {
+
+    const file = Bun.file(filePath);
+
+    if (!(await file.exists())) {
       localData = {
-        guild: interaction.guildId!,
+        guild: interaction.guild.id,
         channel: interaction.channelId,
         sub: [],
       };
     } else {
-      localData = JSON.parse(readFileSync(filePath, "utf-8"));
+      localData = await file.json();
     }
+
     try {
       if (localData.sub.some((val) => val.name === artist)) {
         await interaction.reply({
-          content: `你已經訂閱過${artist}`,
+          content: `你已經訂閱過 ${artist}`,
           ephemeral: true,
         });
-        console.warn(chalk.red(`[nhentai]${interaction.user.displayName} 重複訂閱${artist}`));
+        logger.warn(
+          `[nhentai] ${interaction.user.displayName} 重複訂閱 ${artist}`
+        );
         return;
       }
+
       const cachePath = `./resource/cache/nhentai/${artist}.json`;
+      const cacheFile = Bun.file(cachePath);
       let tagID;
-      if (!existsSync(cachePath)) {
+
+      if (!(await cacheFile.exists())) {
         const doujinList = await nhentai.fetchSearch(artist);
         tagID = doujinList.fetchTagID().id.toString();
         const doujin = doujinList.fetchTagID();
@@ -75,11 +88,13 @@ export default {
           url: doujin.url,
           count: doujin.count,
         };
-        writeFileSync(cachePath, JSON.stringify(archiecache, null, 2), "utf-8");
+
+        await Bun.write(cacheFile, JSON.stringify(archiecache, null, 2));
       } else {
-        const doujinList: archieCache = JSON.parse(readFileSync(cachePath, "utf-8"));
+        const doujinList: archieCache = await cacheFile.json();
         tagID = doujinList.id;
       }
+
       const doujin = await nhentai.getLastTagAPI(tagID);
 
       localData.sub.push({
@@ -87,16 +102,18 @@ export default {
         id: tagID,
         status: language,
         last_up: doujin.title.pretty,
-        other: "https://nhentai.net/g/" + doujin.id.toString(),
+        other: `https://nhentai.net/g/${doujin.id}`,
       });
-      writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
+
+      await Bun.write(file, JSON.stringify(localData, null, 2));
+
       await interaction.reply({
-        content: `已經將${artist}加入訂閱列表`,
+        content: `已經將 ${artist} 加入訂閱列表`,
         ephemeral: true,
       });
-      console.log(chalk.green(`[nhentai]${interaction.guildId} sub ${artist}`));
+      logger.info(`[nhentai] ${interaction.guildId} sub ${artist}`);
     } catch (error) {
       throw `[nhnetai]${error}`;
     }
   },
-};
+} as Command;

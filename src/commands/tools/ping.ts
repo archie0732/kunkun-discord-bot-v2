@@ -1,17 +1,15 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { ExtendedClient } from "@/types/ExtendedClient";
+import { SlashCommandBuilder } from "discord.js";
 
 import logger from "@/utils/logger";
+
+import type { Command } from "..";
 
 export default {
   data: new SlashCommandBuilder()
     .setName(`ping`)
     .setDescription(`檢測機器人延遲`),
 
-  async execute(
-    interaction: ChatInputCommandInteraction,
-    client: ExtendedClient
-  ) {
+  async execute(interaction, client) {
     try {
       await interaction.deferReply({ fetchReply: true });
       const message = await interaction.fetchReply();
@@ -29,4 +27,4 @@ export default {
       logger.error(`[kunkun]ping error`, error);
     }
   },
-};
+} as Command;

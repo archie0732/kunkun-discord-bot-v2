@@ -22,8 +22,12 @@
     "puppeteer": "^22.12.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.10.0",
     "@types/bun": "^1.1.9",
+    "@types/eslint__js": "^8.42.3",
     "@types/node": "^20.14.12",
-    "typescript": "^5.5.4"
+    "eslint": "^9.10.0",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.5.0"
   }
 }

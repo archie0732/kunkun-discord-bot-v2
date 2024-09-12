@@ -1,16 +1,15 @@
 import {
-  ChatInputCommandInteraction,
   SlashCommandBuilder,
   SlashCommandStringOption,
   AttachmentBuilder,
 } from "discord.js";
 
-import type { ExtendedClient } from "@/types/ExtendedClient";
+import type { Command } from "..";
 
 export default {
   data: new SlashCommandBuilder()
     .setName(`get_json`)
-    .setNameLocalization("zh-TW", "取得serve資料")
+    .setNameLocalization("zh-TW", "取得 server 資料")
     .setDescription("此功能僅限開發者使用，請不要誤用此功能")
     .addStringOption(
       new SlashCommandStringOption()
@@ -30,7 +29,7 @@ export default {
         .setRequired(true)
     ),
 
-  async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
+  async execute(interaction, _) {
     const dataName = interaction.options.getString("data", true);
     const password = interaction.options.getString("password", true);
 
@@ -51,4 +50,4 @@ export default {
       ephemeral: true,
     });
   },
-};
+} as Command;

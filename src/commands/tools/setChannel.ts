@@ -1,22 +1,23 @@
 import {
   ChannelType,
-  ChatInputCommandInteraction,
   SlashCommandBuilder,
+  SlashCommandChannelOption,
+  SlashCommandStringOption,
 } from "discord.js";
-import { readFileSync, writeFileSync } from "fs";
-import { ExtendedClient } from "@/types/ExtendedClient";
+import { readFileSync } from "fs";
 
 import logger from "@/utils/logger";
 
 import type { local_subscribe } from "@/types/subData";
+import type { Command } from "..";
 
 export default {
   data: new SlashCommandBuilder()
     .setName(`set_channel`)
     .setNameLocalization("zh-TW", "設定通知頻道")
     .setDescription(`設置漫畫通知的頻道`)
-    .addStringOption((option) =>
-      option
+    .addStringOption(
+      new SlashCommandStringOption()
         .setName(`option`)
         .setDescription(`設定要移動的項目`)
         .setChoices(
@@ -31,30 +32,33 @@ export default {
         )
         .setRequired(true)
     )
-    .addChannelOption((optoin) =>
-      optoin.setName(`channel`).setDescription(`要移去的頻道`).setRequired(true)
+    .addChannelOption(
+      new SlashCommandChannelOption()
+        .setName(`channel`)
+        .setDescription(`要移去的頻道`)
+        .addChannelTypes(ChannelType.GuildText)
+        .setRequired(true)
     ),
 
-  async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
-    const option = interaction.options.getString(`option`);
-    const channel = interaction.options.getChannel(`channel`);
-    if (!(channel?.type === ChannelType.GuildText)) {
-      await interaction.reply({
-        content: `選擇到非法頻道`,
-        ephemeral: true,
-      });
-      return;
-    }
+  async execute(interaction, _) {
+    const option = interaction.options.getString(`option`, true);
+    const channel = interaction.options.getChannel<ChannelType.GuildText>(
+      `channel`,
+      true
+    );
+
     const filePath = `./resource/${option}/${interaction.guildId}.json`;
     const localData: local_subscribe = JSON.parse(
       readFileSync(filePath, "utf-8")
     );
     logger.trace(filePath);
+
     localData.channel = channel.id;
-    writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
+    Bun.write(filePath, JSON.stringify(localData, null, 2));
+
     await interaction.reply({
       content: `已經將${option}移至${channel.name}`,
       ephemeral: true,
     });
   },
-};
+} as Command;
