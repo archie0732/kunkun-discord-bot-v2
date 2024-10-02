@@ -8,7 +8,7 @@ import type { local_subscribe } from "@/types/subData";
 export default {
   data: new SlashCommandBuilder()
     .setName("rm_nhentai")
-    .setNameLocalization("zh-TW", "取消訂閱 nehnati")
+    .setNameLocalization("zh-TW", "取消訂閱nehnati")
     .setDescription("取消訂閱 nhentai 上的作者")
     .addStringOption(
       new SlashCommandStringOption()

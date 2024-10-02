@@ -9,7 +9,7 @@ import type { Command } from "..";
 export default {
   data: new SlashCommandBuilder()
     .setName(`get_json`)
-    .setNameLocalization("zh-TW", "取得 server 資料")
+    .setNameLocalization("zh-TW", "取得server 資料")
     .setDescription("此功能僅限開發者使用，請不要誤用此功能")
     .addStringOption(
       new SlashCommandStringOption()
