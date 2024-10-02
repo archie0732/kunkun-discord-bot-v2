@@ -17,7 +17,7 @@ interface archieCache {
 export default {
   data: new SlashCommandBuilder()
     .setName(`sub_nhentai`)
-    .setNameLocalization("zh-TW", "訂閱 nhentai")
+    .setNameLocalization("zh-TW", "訂閱nhentai")
     .setDescription(`訂閱 nhentai 作者，當有新作時發出通知`)
     .addStringOption(
       new SlashCommandStringOption()
