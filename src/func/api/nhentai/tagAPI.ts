@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch";
 
 interface Picture {
@@ -68,29 +69,24 @@ export class DoujinList {
 }
 
 export async function fetchSearch(name: string): Promise<DoujinList> {
-  try {
     const url = `https://nhentai.net/api/galleries/search?query=${name}`;
     const res = await fetch(url);
     if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}:${url}`);
-    }
+      throw new Error(`HTTP error! status: ${res.status}:${url}`);}
+    
     const data = await res.json();
-    if (!data) throw `cannot find json data`;
+    if (!data) throw new Error(`cannot find json data`);
     return new DoujinList(data, name);
-  } catch (error) {
-    throw error;
-  }
+  
 }
 
 export async function getLastTagAPI(tagID: string): Promise<Doujin> {
-  try {
+  
     const url = `https://nhentai.net/api/galleries/tagged?tag_id=${tagID}`;
     const res = await fetch(url);
     if (!res.ok) throw `[nhentai]fetch api error: status code: ${res.status}:${url}`;
     const data = await res.json();
 
     return new DoujinList(data, "").doujin();
-  } catch (error) {
-    throw error;
-  }
+  
 }
