@@ -2,7 +2,7 @@ import { EmbedBuilder } from "discord.js";
 import { ExtendedClient } from "@/types/ExtendedClient";
 import { fetchManhuagui } from "./manhuagui_fetch";
 import { join } from "path";
-import type { local_subscribe } from "@/types/subData";
+import type { local_subscribe } from "@/func/types/subData";
 
 import chalk from "chalk";
 import fs from "fs";
@@ -17,7 +17,9 @@ export async function checkUpdateManhuagui(client: ExtendedClient) {
 
   for (const files of folder) {
     const filePath = join(folderPath, files);
-    const localData: local_subscribe = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    const localData: local_subscribe = JSON.parse(
+      fs.readFileSync(filePath, "utf-8")
+    );
 
     let channel = client.channels.cache.get(localData.channel);
 
@@ -39,7 +41,11 @@ export async function checkUpdateManhuagui(client: ExtendedClient) {
         if (entry.last_up !== manhuagui.status.lastest_chapter) {
           entry.last_up = manhuagui.status.lastest_chapter;
           entry.other = manhuagui.status.chapter_url;
-          console.log(chalk.blue(`[manhuagui]${manhuagui.title.Ch} new upload -  ${manhuagui.status.lastest_chapter}`));
+          console.log(
+            chalk.blue(
+              `[manhuagui]${manhuagui.title.Ch} new upload -  ${manhuagui.status.lastest_chapter}`
+            )
+          );
           await sendAnnouncement(client, manhuagui, channel!);
           flag = true;
         }
@@ -55,13 +61,19 @@ export async function checkUpdateManhuagui(client: ExtendedClient) {
   }
 }
 
-export async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhuagui, channel: Channel) {
+export async function sendAnnouncement(
+  client: ExtendedClient,
+  manhuagui: Manhuagui,
+  channel: Channel
+) {
   const embed = new EmbedBuilder()
     .setAuthor({
       name: `${client.user?.username} - 被切斷的五條悟: manhuagui`,
       iconURL: client.user?.displayAvatarURL() || undefined,
     })
-    .setTitle(`${manhuagui.title.Ch} 更新至 ${manhuagui.status.lastest_chapter}`)
+    .setTitle(
+      `${manhuagui.title.Ch} 更新至 ${manhuagui.status.lastest_chapter}`
+    )
     .setURL(`${manhuagui.status.chapter_url}`)
     .setImage(manhuagui.cover)
     .setThumbnail(`https://tw.manhuagui.com/favicon.ico`)
@@ -70,7 +82,11 @@ export async function sendAnnouncement(client: ExtendedClient, manhuagui: Manhua
     )
     .setTimestamp(Date.now())
     .addFields(
-      { name: `🛜 原網站`, value: `[manhuagui](https://tw.manhuagui.com/)`, inline: true },
+      {
+        name: `🛜 原網站`,
+        value: `[manhuagui](https://tw.manhuagui.com/)`,
+        inline: true,
+      },
       {
         name: `✒️ 作者`,
         value: `${manhuagui.introduce.author}`,

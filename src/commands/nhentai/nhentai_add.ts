@@ -1,10 +1,10 @@
 import { SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
+import { R7Command } from "@/class/commands";
+import nhentai from "@/func/api/nhentai";
 
-import nhentai from "@/api/nhentai";
+import type { local_subscribe } from "@/func/types/subData";
 
-import type { local_subscribe } from "@/types/subData";
-import type { Command } from "..";
-import logger from "@/utils/logger";
+import logger from "@/class/logger";
 
 interface archieCache {
   id: string;
@@ -14,8 +14,8 @@ interface archieCache {
   count: number;
 }
 
-export default {
-  data: new SlashCommandBuilder()
+export default new R7Command({
+  builder: new SlashCommandBuilder()
     .setName(`sub_nhentai`)
     .setNameLocalization("zh-TW", "訂閱nhentai")
     .setDescription(`訂閱 nhentai 作者，當有新作時發出通知`)
@@ -37,7 +37,9 @@ export default {
         .setRequired(true)
     )
     .setDMPermission(false),
-  async execute(interaction, _) {
+  defer: true,
+  ephemeral: true,
+  async execute(interaction) {
     if (!interaction.inCachedGuild()) return;
 
     const artist = interaction.options
@@ -63,9 +65,8 @@ export default {
 
     try {
       if (localData.sub.some((val) => val.name === artist)) {
-        await interaction.reply({
+        await interaction.editReply({
           content: `你已經訂閱過 ${artist}`,
-          ephemeral: true,
         });
         logger.warn(
           `[nhentai] ${interaction.user.displayName} 重複訂閱 ${artist}`
@@ -107,13 +108,12 @@ export default {
 
       await Bun.write(file, JSON.stringify(localData, null, 2));
 
-      await interaction.reply({
+      await interaction.editReply({
         content: `已經將 ${artist} 加入訂閱列表`,
-        ephemeral: true,
       });
       logger.info(`[nhentai] ${interaction.guildId} sub ${artist}`);
     } catch (error) {
       throw `[nhnetai]${error}`;
     }
   },
-} as Command;
+});

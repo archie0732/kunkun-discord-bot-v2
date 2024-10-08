@@ -1,14 +1,14 @@
 import { SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { isNumeric } from "@/utils/isNumeric";
+import { R7Command } from "@/class/commands";
 
 import chalk from "chalk";
 
-import type { local_subscribe } from "@/types/subData";
-import type { Command } from "..";
+import type { local_subscribe } from "@/func/types/subData";
 
-export default {
-  data: new SlashCommandBuilder()
+export default new R7Command({
+  builder: new SlashCommandBuilder()
     .setName("rm_manhuagui")
     .setNameLocalization("zh-TW", "取消訂閱漫畫")
     .setDescription("取消訂閱在 https://tw.manhuagui.com/ 訂閱的漫畫")
@@ -19,16 +19,16 @@ export default {
         .setRequired(true)
     )
     .setDMPermission(false),
-
-  async execute(interaction, _) {
+  defer: true,
+  ephemeral: true,
+  async execute(interaction) {
     if (!interaction.guildId) throw `cannot use this command in there`;
     try {
       const id = interaction.options.getString("id");
 
       if (!isNumeric(id!)) {
-        await interaction.reply({
+        await interaction.editReply({
           content: `您的輸入包含非法字元`,
-          ephemeral: true,
         });
         console.log(
           chalk.red(
@@ -42,9 +42,8 @@ export default {
       const filePath = `./resource/manhuagui/${interaction.guildId}.json`;
 
       if (!existsSync(filePath)) {
-        await interaction.reply({
+        await interaction.editReply({
           content: "該伺服器未訂閱任何作品",
-          ephemeral: true,
         });
         console.log(
           chalk.red(
@@ -61,9 +60,8 @@ export default {
       localData.sub = localData.sub.filter((value) => value.id !== id);
 
       if (localData.sub.length === originalLength) {
-        await interaction.reply({
+        await interaction.editReply({
           content: "伺服器未定閱此作品",
-          ephemeral: true,
         });
         console.log(
           chalk.red(
@@ -75,13 +73,12 @@ export default {
 
       writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
 
-      await interaction.reply({
+      await interaction.editReply({
         content: `您已成功取消訂閱漫畫 ID: ${id}`,
-        ephemeral: true,
       });
       console.log(chalk.green(`[manhuagui]${interaction.guildId} rm ${id}`));
     } catch (error) {
       throw `[manhuagui]${error}`;
     }
   },
-} as Command;
+});

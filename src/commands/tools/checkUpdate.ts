@@ -1,30 +1,26 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { hanime1A } from "@/api/hanime1/hanime1_a";
+import { hanime1A } from "@/func/api/hanime1/hanime1_a";
+import { R7Command } from "@/class/commands";
 
-import manhuagui from "@/api/manhuagui";
-import nhentai from "@/notification/nhentai";
-import logger from "@/utils/logger";
+import manhuagui from "@/func/api/manhuagui";
+import nhentai from "@/func/notification/nhentai";
+import logger from "@/class/logger";
 
-import type { ExtendedClient } from "@/types/ExtendedClient";
-
-export default {
-  data: new SlashCommandBuilder()
+export default new R7Command({
+  builder: new SlashCommandBuilder()
     .setName("check_update")
     .setNameLocalization("zh-TW", "檢查訂閱更新")
     .setDescription("除錯用 - 檢查您訂閱的內伺服器訂閱內容是否有更新"),
-
-  async execute(
-    interaction: ChatInputCommandInteraction,
-    client: ExtendedClient
-  ) {
+  defer: true,
+  ephemeral: true,
+  async execute(interaction: ChatInputCommandInteraction) {
     try {
       // Step 1: Check hanime1A updates
-      await interaction.reply({
+      await interaction.editReply({
         content: "正在檢查 hanime1A 更新...",
-        ephemeral: true,
       });
       try {
-        await hanime1A(client);
+        await hanime1A(this);
       } catch (error) {
         logger.error(`[hanime1A update error] - ${error}`);
         await interaction.followUp({
@@ -39,7 +35,7 @@ export default {
         ephemeral: true,
       });
       try {
-        await nhentai.checkup(client);
+        await nhentai.checkup(this);
       } catch (error) {
         logger.error(`[nhentai update error] - ${error}`);
         await interaction.followUp({
@@ -54,7 +50,7 @@ export default {
         ephemeral: true,
       });
       try {
-        await manhuagui.checkUpdateManhuagui(client);
+        await manhuagui.checkUpdateManhuagui(this);
       } catch (error) {
         logger.error(`[manhuagui update error] - ${error}`, error);
         await interaction.followUp({
@@ -70,10 +66,9 @@ export default {
       });
     } catch (generalError) {
       logger.error(`[check update error] - ${generalError}`);
-      await interaction.reply({
+      await interaction.editReply({
         content: "檢查更新時發現錯誤",
-        ephemeral: true,
       });
     }
   },
-};
+});

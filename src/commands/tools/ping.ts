@@ -1,30 +1,43 @@
-import { SlashCommandBuilder } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder } from "@discordjs/builders";
+import { Colors } from "discord.js";
+import { R7Command } from "@/class/commands";
 
-import logger from "@/utils/logger";
+export default new R7Command({
+  builder: new SlashCommandBuilder()
+    .setName("ping")
+    .setDescription("Check bot latency"),
+  defer: false,
+  ephemeral: false,
+  async execute(interaction) {
+    const embed = new EmbedBuilder().setColor(Colors.Blue).addFields(
+      {
+        name: "⏳ Latency",
+        value: "`Waiting...`",
+      },
+      {
+        name: "📡 WebSocket Latency",
+        value: `${this.ws.ping}ms`,
+      }
+    );
 
-import type { Command } from "..";
+    const sent = await interaction.reply({
+      content: "Pong! 🏓",
+      embeds: [embed],
+      fetchReply: true,
+    });
 
-export default {
-  data: new SlashCommandBuilder()
-    .setName(`ping`)
-    .setDescription(`檢測機器人延遲`),
+    const roundTripLatency = Math.round(
+      (sent.createdTimestamp - interaction.createdTimestamp) / 2
+    );
 
-  async execute(interaction, client) {
-    try {
-      await interaction.deferReply({ fetchReply: true });
-      const message = await interaction.fetchReply();
+    embed.spliceFields(0, 1, {
+      name: "⌛ Latency",
+      value: `${roundTripLatency}ms`,
+    });
 
-      const sendMessage = `🔍 API Latency: ${
-        client.ws.ping
-      }ms\n🛜 Client Ping: ${
-        message.createdTimestamp - interaction.createdTimestamp
-      }ms`;
-
-      await interaction.editReply({
-        content: sendMessage,
-      });
-    } catch (error) {
-      logger.error(`[kunkun]ping error`, error);
-    }
+    await interaction.editReply({
+      content: "Pong! 🏓",
+      embeds: [embed],
+    });
   },
-} as Command;
+});

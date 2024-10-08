@@ -2,13 +2,13 @@ import { EmbedBuilder } from "discord.js";
 import { readdirSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 
-import nhentai from "@/api/nhentai";
+import nhentai from "@/func/api/nhentai";
 import logger from "@/utils/logger";
 
 import type { ExtendedClient } from "@/types/ExtendedClient";
-import type { local_subscribe } from "@/types/subData";
+import type { local_subscribe } from "@/func/types/subData";
 import type { Channel } from "discord.js";
-import type { Doujin } from "@/api/nhentai/tagAPI";
+import type { Doujin } from "@/func/api/nhentai/tagAPI";
 
 export async function checkup(client: ExtendedClient): Promise<void> {
   const folderPath = "./resource/nhentai";

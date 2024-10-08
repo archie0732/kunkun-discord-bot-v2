@@ -1,12 +1,9 @@
-import type { ClientEvents } from "discord.js";
-import type { ExtendedClient } from "../types/ExtendedClient";
-import ready from "./client/ready";
-import interactionCreate from "./client/interactionCreate";
+import type { R7EventHandler } from "@/class/events";
 
-export interface Event<Event extends keyof ClientEvents> {
-  name: Event;
-  on?: (this: ExtendedClient, ...args: ClientEvents[Event]) => Promise<void>;
-  once?: (this: ExtendedClient, ...args: ClientEvents[Event]) => Promise<void>;
-}
+import onButton from "./core/onButton";
+import onCommand from "./core/onCommand";
+import onModalSubmit from "./core/onModalSubmit";
 
-export default [interactionCreate, ready] as Event<keyof ClientEvents>[];
+import ready from "./custom/ready";
+
+export default [onButton, onCommand, onModalSubmit, ready] as R7EventHandler[];

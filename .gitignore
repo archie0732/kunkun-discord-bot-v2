@@ -9,3 +9,5 @@ resource/nhentai/*
 
 bun.lockb
 .login
+
+.cache

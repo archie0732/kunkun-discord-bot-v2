@@ -3,17 +3,17 @@ import {
   SlashCommandBuilder,
   SlashCommandStringOption,
 } from "discord.js";
-import { ExtendedClient } from "@/types/ExtendedClient";
-import { ManhuaguiError } from "@/api/manhuagui/error";
+import { ManhuaguiError } from "@/func/api/manhuagui/error";
 import { isNumeric } from "@/utils/isNumeric";
+import { R7Command } from "@/class/commands";
 
-import Manhuagui from "@/api/manhuagui";
-import logger from "@/utils/logger";
+import Manhuagui from "@/func/api/manhuagui";
+import logger from "@/class/logger";
 
-import type { local_subscribe } from "@/types/subData";
+import type { local_subscribe } from "@/func/types/subData";
 
-export default {
-  data: new SlashCommandBuilder()
+export default new R7Command({
+  builder: new SlashCommandBuilder()
     .setName(`sub_manhuagui`)
     .setNameLocalization(`zh-TW`, "訂閱漫畫")
     .setDescription(`新增漫畫到訂閱列表在更新時會有通知`)
@@ -24,15 +24,17 @@ export default {
         .setRequired(true)
     )
     .setDMPermission(false),
-  async execute(interaction: ChatInputCommandInteraction, _: ExtendedClient) {
+
+  defer: true,
+  ephemeral: true,
+  async execute(interaction: ChatInputCommandInteraction) {
     if (!interaction.inCachedGuild()) return;
     const id = interaction.options.getString("id", true);
 
     try {
       if (!isNumeric(id)) {
-        await interaction.reply({
+        await interaction.editReply({
           content: `輸入非法字元`,
-          ephemeral: true,
         });
         return;
       }
@@ -55,9 +57,8 @@ export default {
       }
 
       if (localData.sub.some((value) => value.id === id)) {
-        await interaction.reply({
+        await interaction.editReply({
           content: `此漫畫已在訂閱列表中`,
-          ephemeral: true,
         });
         return;
       }
@@ -72,9 +73,8 @@ export default {
 
       Bun.write(file, JSON.stringify(localData, null, 2));
 
-      await interaction.reply({
+      await interaction.editReply({
         content: `成功訂閱漫畫 : ${manhuagui.title.Ch}`,
-        ephemeral: true,
       });
 
       logger.info(
@@ -82,9 +82,8 @@ export default {
       );
     } catch (error) {
       if (error instanceof ManhuaguiError) {
-        await interaction.reply({
+        await interaction.editReply({
           content: `抓取資料失敗`,
-          ephemeral: true,
         });
         logger.error(
           `[manhuagui] ${interaction.user.displayName} - 抓取資料失敗: ${error.message}`,
@@ -96,4 +95,4 @@ export default {
       logger.error(`[manhuagui] add error:`, error);
     }
   },
-};
+});

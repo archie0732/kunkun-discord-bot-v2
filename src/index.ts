@@ -1,6 +1,13 @@
 import "dotenv/config";
-import { ExtendedClient } from "./types/ExtendedClient";
+import { R7Client } from "@/class/client";
+import { GatewayIntentBits } from "discord.js";
 
-const client = new ExtendedClient();
+import type { ClientOptions } from "discord.js";
 
-await client.login(process.env["DEV_TOKEN"]);
+const options = {
+  intents: [GatewayIntentBits.Guilds],
+} satisfies ClientOptions;
+
+const client = new R7Client(options);
+
+client.login(process.env["TOKEN"]).catch(console.error);

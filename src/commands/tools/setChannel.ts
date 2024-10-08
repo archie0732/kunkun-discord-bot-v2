@@ -6,13 +6,13 @@ import {
 } from "discord.js";
 import { readFileSync } from "fs";
 
-import logger from "@/utils/logger";
+import logger from "@/class/logger";
 
-import type { local_subscribe } from "@/types/subData";
-import type { Command } from "..";
+import type { local_subscribe } from "@/func/types/subData";
+import { R7Command } from "@/class/commands";
 
-export default {
-  data: new SlashCommandBuilder()
+export default new R7Command({
+  builder: new SlashCommandBuilder()
     .setName(`set_channel`)
     .setNameLocalization("zh-TW", "設定通知頻道")
     .setDescription(`設置漫畫通知的頻道`)
@@ -39,8 +39,9 @@ export default {
         .addChannelTypes(ChannelType.GuildText)
         .setRequired(true)
     ),
-
-  async execute(interaction, _) {
+  defer: true,
+  ephemeral: true,
+  async execute(interaction) {
     const option = interaction.options.getString(`option`, true);
     const channel = interaction.options.getChannel<ChannelType.GuildText>(
       `channel`,
@@ -56,9 +57,8 @@ export default {
     localData.channel = channel.id;
     Bun.write(filePath, JSON.stringify(localData, null, 2));
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `已經將${option}移至${channel.name}`,
-      ephemeral: true,
     });
   },
-} as Command;
+});
