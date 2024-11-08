@@ -4,7 +4,7 @@ export type local_subscribe = {
   sub: {
     name: string;
     id: string;
-    status: string,
+    status: string;
     last_up: string;
     other: string;
   }[];

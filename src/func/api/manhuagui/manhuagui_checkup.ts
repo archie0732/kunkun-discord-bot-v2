@@ -1,14 +1,14 @@
-import { EmbedBuilder } from "discord.js";
-import { ExtendedClient } from "@/types/ExtendedClient";
-import { fetchManhuagui } from "./manhuagui_fetch";
-import { join } from "path";
-import type { local_subscribe } from "@/func/types/subData";
+import { EmbedBuilder } from 'discord.js';
+import { ExtendedClient } from '@/types/ExtendedClient';
+import { fetchManhuagui } from './manhuagui_fetch';
+import { join } from 'path';
+import type { local_subscribe } from '@/func/types/subData';
 
-import chalk from "chalk";
-import fs from "fs";
+import chalk from 'chalk';
+import fs from 'fs';
 
-import type { Channel } from "discord.js";
-import type { Manhuagui } from "./manhuagui_fetch";
+import type { Channel } from 'discord.js';
+import type { Manhuagui } from './manhuagui_fetch';
 
 export async function checkUpdateManhuagui(client: ExtendedClient) {
   const folderPath = `./resource/manhuagui`;
@@ -18,7 +18,7 @@ export async function checkUpdateManhuagui(client: ExtendedClient) {
   for (const files of folder) {
     const filePath = join(folderPath, files);
     const localData: local_subscribe = JSON.parse(
-      fs.readFileSync(filePath, "utf-8")
+      fs.readFileSync(filePath, 'utf-8'),
     );
 
     let channel = client.channels.cache.get(localData.channel);
@@ -43,19 +43,20 @@ export async function checkUpdateManhuagui(client: ExtendedClient) {
           entry.other = manhuagui.status.chapter_url;
           console.log(
             chalk.blue(
-              `[manhuagui]${manhuagui.title.Ch} new upload -  ${manhuagui.status.lastest_chapter}`
-            )
+              `[manhuagui]${manhuagui.title.Ch} new upload -  ${manhuagui.status.lastest_chapter}`,
+            ),
           );
           await sendAnnouncement(client, manhuagui, channel!);
           flag = true;
         }
-      } catch (error) {
+      }
+      catch (error) {
         throw `[manhuagui]${error}`;
       }
     }
 
     if (flag) {
-      fs.writeFileSync(filePath, JSON.stringify(localData, null, 2), "utf-8");
+      fs.writeFileSync(filePath, JSON.stringify(localData, null, 2), 'utf-8');
       console.log(chalk.green(`[manhuagui]${files}  -  檔案寫入成功!`));
     }
   }
@@ -64,7 +65,7 @@ export async function checkUpdateManhuagui(client: ExtendedClient) {
 export async function sendAnnouncement(
   client: ExtendedClient,
   manhuagui: Manhuagui,
-  channel: Channel
+  channel: Channel,
 ) {
   const embed = new EmbedBuilder()
     .setAuthor({
@@ -72,13 +73,13 @@ export async function sendAnnouncement(
       iconURL: client.user?.displayAvatarURL() || undefined,
     })
     .setTitle(
-      `${manhuagui.title.Ch} 更新至 ${manhuagui.status.lastest_chapter}`
+      `${manhuagui.title.Ch} 更新至 ${manhuagui.status.lastest_chapter}`,
     )
     .setURL(`${manhuagui.status.chapter_url}`)
     .setImage(manhuagui.cover)
     .setThumbnail(`https://tw.manhuagui.com/favicon.ico`)
     .setDescription(
-      `- 您可以使用 </sub_manhuagui:1268082123466739764> 來訂閱\n- 或者使用 </rm_manhuagui:1268082123466739765> 來取消訂閱`
+      `- 您可以使用 </sub_manhuagui:1268082123466739764> 來訂閱\n- 或者使用 </rm_manhuagui:1268082123466739765> 來取消訂閱`,
     )
     .setTimestamp(Date.now())
     .addFields(
@@ -108,8 +109,8 @@ export async function sendAnnouncement(
       },
       {
         name: `🏷️ 標籤`,
-        value: `${manhuagui.introduce.categories.join(", ")}`,
-      }
+        value: `${manhuagui.introduce.categories.join(', ')}`,
+      },
     )
     .setFooter({ text: `archie0732's kunkun-bot v2 with TypeScripe` });
 
@@ -119,10 +120,12 @@ export async function sendAnnouncement(
         content: `您在[mahuagui](https://tw.manhuagui.com)訂閱的 [${manhuagui.title.Ch}](https://tw.manhuagui.com/comic/${manhuagui.title.id}) 更新了 [${manhuagui.status.lastest_chapter}](${manhuagui.status.chapter_url})`,
         embeds: [embed],
       });
-    } else {
+    }
+    else {
       throw `[manguagui]Invalid channel`;
     }
-  } catch (error) {
+  }
+  catch (error) {
     throw `sendAnnouncenent happen error:${error}`;
   }
 }

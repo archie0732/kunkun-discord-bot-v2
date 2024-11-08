@@ -3,18 +3,18 @@ import {
   SlashCommandBuilder,
   SlashCommandChannelOption,
   SlashCommandStringOption,
-} from "discord.js";
-import { readFileSync } from "fs";
+} from 'discord.js';
+import { readFileSync } from 'fs';
 
-import logger from "@/class/logger";
+import logger from '@/class/logger';
 
-import type { local_subscribe } from "@/func/types/subData";
-import { R7Command } from "@/class/commands";
+import type { local_subscribe } from '@/func/types/subData';
+import { R7Command } from '@/class/commands';
 
 export default new R7Command({
   builder: new SlashCommandBuilder()
     .setName(`set_channel`)
-    .setNameLocalization("zh-TW", "設定通知頻道")
+    .setNameLocalization('zh-TW', '設定通知頻道')
     .setDescription(`設置漫畫通知的頻道`)
     .addStringOption(
       new SlashCommandStringOption()
@@ -28,16 +28,16 @@ export default new R7Command({
           {
             name: `manhuagui`,
             value: `manhuagui`,
-          }
+          },
         )
-        .setRequired(true)
+        .setRequired(true),
     )
     .addChannelOption(
       new SlashCommandChannelOption()
         .setName(`channel`)
         .setDescription(`要移去的頻道`)
         .addChannelTypes(ChannelType.GuildText)
-        .setRequired(true)
+        .setRequired(true),
     ),
   defer: true,
   ephemeral: true,
@@ -45,12 +45,12 @@ export default new R7Command({
     const option = interaction.options.getString(`option`, true);
     const channel = interaction.options.getChannel<ChannelType.GuildText>(
       `channel`,
-      true
+      true,
     );
 
     const filePath = `./resource/${option}/${interaction.guildId}.json`;
     const localData: local_subscribe = JSON.parse(
-      readFileSync(filePath, "utf-8")
+      readFileSync(filePath, 'utf-8'),
     );
     logger.trace(filePath);
 

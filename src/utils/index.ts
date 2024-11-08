@@ -1,4 +1,4 @@
-import * as getTime from "./getNowTime";
+import * as getTime from './getNowTime';
 
 export default {
   ...getTime,

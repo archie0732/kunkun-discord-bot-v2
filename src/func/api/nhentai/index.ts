@@ -1,4 +1,4 @@
-import * as tagAPI from "./tagAPI";
+import * as tagAPI from './tagAPI';
 
 export default {
   ...tagAPI,

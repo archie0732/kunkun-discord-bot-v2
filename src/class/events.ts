@@ -1,5 +1,5 @@
-import type { ClientEvents } from "discord.js";
-import type { R7Client } from "./client";
+import type { ClientEvents } from 'discord.js';
+import type { R7Client } from './client';
 
 type Events = keyof ClientEvents;
 

@@ -5,9 +5,9 @@ import type {
   ButtonInteraction,
   ChatInputCommandInteraction,
   ModalSubmitInteraction,
-} from "discord.js";
-import type { ModalBuilder, SharedSlashCommand } from "@discordjs/builders";
-import type { R7Client } from "./client";
+} from 'discord.js';
+import type { ModalBuilder, SharedSlashCommand } from '@discordjs/builders';
+import type { R7Client } from './client';
 
 export interface R7CommandOptions {
   builder: SharedSlashCommand;
@@ -16,27 +16,27 @@ export interface R7CommandOptions {
   modals?: Record<string, ModalBuilder>;
   execute: (
     this: R7Client,
-    interaction: ChatInputCommandInteraction<"cached">
+    interaction: ChatInputCommandInteraction<'cached'>
   ) => void | Promise<void>;
   onAutocomplete?: (
     this: R7Client,
-    interaction: AutocompleteInteraction<"cached">
+    interaction: AutocompleteInteraction<'cached'>
   ) =>
     | readonly ApplicationCommandOptionChoiceData[]
     | Promise<readonly ApplicationCommandOptionChoiceData[]>;
   onButton?: (
     this: R7Client,
-    interaction: ButtonInteraction<"cached">,
+    interaction: ButtonInteraction<'cached'>,
     buttonId: string
   ) => void | Promise<void>;
   onModalSubmit?: (
     this: R7Client,
-    interaction: ModalSubmitInteraction<"cached">,
+    interaction: ModalSubmitInteraction<'cached'>,
     modalId: string
   ) => void | Promise<void>;
   onSelectMenu?: (
     this: R7Client,
-    interaction: AnySelectMenuInteraction<"cached">,
+    interaction: AnySelectMenuInteraction<'cached'>,
     menuId: string
   ) => void | Promise<void>;
 }
@@ -48,27 +48,31 @@ export class R7Command {
   modals?: Record<string, ModalBuilder>;
   execute: (
     this: R7Client,
-    interaction: ChatInputCommandInteraction<"cached">
+    interaction: ChatInputCommandInteraction<'cached'>
   ) => void | Promise<void>;
+
   onAutocomplete?: (
     this: R7Client,
-    interaction: AutocompleteInteraction<"cached">
+    interaction: AutocompleteInteraction<'cached'>
   ) =>
     | readonly ApplicationCommandOptionChoiceData[]
     | Promise<readonly ApplicationCommandOptionChoiceData[]>;
+
   onButton?: (
     this: R7Client,
-    interaction: ButtonInteraction<"cached">,
+    interaction: ButtonInteraction<'cached'>,
     buttonId: string
   ) => void | Promise<void>;
+
   onModalSubmit?: (
     this: R7Client,
-    interaction: ModalSubmitInteraction<"cached">,
+    interaction: ModalSubmitInteraction<'cached'>,
     modalId: string
   ) => void | Promise<void>;
+
   onSelectMenu?: (
     this: R7Client,
-    interaction: AnySelectMenuInteraction<"cached">,
+    interaction: AnySelectMenuInteraction<'cached'>,
     menuId: string
   ) => void | Promise<void>;
 

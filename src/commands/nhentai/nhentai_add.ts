@@ -1,10 +1,10 @@
-import { SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
-import { R7Command } from "@/class/commands";
-import nhentai from "@/func/api/nhentai";
+import { SlashCommandBuilder, SlashCommandStringOption } from 'discord.js';
+import { R7Command } from '@/class/commands';
+import nhentai from '@/func/api/nhentai';
 
-import type { local_subscribe } from "@/func/types/subData";
+import type { local_subscribe } from '@/func/types/subData';
 
-import logger from "@/class/logger";
+import logger from '@/class/logger';
 
 interface archieCache {
   id: string;
@@ -17,24 +17,24 @@ interface archieCache {
 export default new R7Command({
   builder: new SlashCommandBuilder()
     .setName(`sub_nhentai`)
-    .setNameLocalization("zh-TW", "訂閱nhentai")
+    .setNameLocalization('zh-TW', '訂閱nhentai')
     .setDescription(`訂閱 nhentai 作者，當有新作時發出通知`)
     .addStringOption(
       new SlashCommandStringOption()
-        .setName("artist")
-        .setDescription("作者名稱")
-        .setRequired(true)
+        .setName('artist')
+        .setDescription('作者名稱')
+        .setRequired(true),
     )
     .addStringOption(
       new SlashCommandStringOption()
-        .setName("language")
-        .setDescription("避免重複通知相同本子")
+        .setName('language')
+        .setDescription('避免重複通知相同本子')
         .setChoices(
-          { name: "中文", value: "chinese" },
-          { name: "英文", value: "english" },
-          { name: "日文", value: "japanese" }
+          { name: '中文', value: 'chinese' },
+          { name: '英文', value: 'english' },
+          { name: '日文', value: 'japanese' },
         )
-        .setRequired(true)
+        .setRequired(true),
     )
     .setDMPermission(false),
   defer: true,
@@ -43,9 +43,9 @@ export default new R7Command({
     if (!interaction.inCachedGuild()) return;
 
     const artist = interaction.options
-      .getString("artist", true)
-      .replaceAll(" ", "-");
-    const language = interaction.options.getString("language", true);
+      .getString('artist', true)
+      .replaceAll(' ', '-');
+    const language = interaction.options.getString('language', true);
 
     const filePath = `./resource/nhentai/${interaction.guild.id}.json`;
 
@@ -59,7 +59,8 @@ export default new R7Command({
         channel: interaction.channelId,
         sub: [],
       };
-    } else {
+    }
+    else {
       localData = await file.json();
     }
 
@@ -69,7 +70,7 @@ export default new R7Command({
           content: `你已經訂閱過 ${artist}`,
         });
         logger.warn(
-          `[nhentai] ${interaction.user.displayName} 重複訂閱 ${artist}`
+          `[nhentai] ${interaction.user.displayName} 重複訂閱 ${artist}`,
         );
         return;
       }
@@ -91,7 +92,8 @@ export default new R7Command({
         };
 
         await Bun.write(cacheFile, JSON.stringify(archiecache, null, 2));
-      } else {
+      }
+      else {
         const doujinList: archieCache = await cacheFile.json();
         tagID = doujinList.id;
       }
@@ -112,7 +114,8 @@ export default new R7Command({
         content: `已經將 ${artist} 加入訂閱列表`,
       });
       logger.info(`[nhentai] ${interaction.guildId} sub ${artist}`);
-    } catch (error) {
+    }
+    catch (error) {
       throw `[nhnetai]${error}`;
     }
   },

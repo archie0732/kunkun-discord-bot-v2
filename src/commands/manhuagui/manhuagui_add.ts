@@ -2,26 +2,26 @@ import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   SlashCommandStringOption,
-} from "discord.js";
-import { ManhuaguiError } from "@/func/api/manhuagui/error";
-import { isNumeric } from "@/utils/isNumeric";
-import { R7Command } from "@/class/commands";
+} from 'discord.js';
+import { ManhuaguiError } from '@/func/api/manhuagui/error';
+import { isNumeric } from '@/utils/isNumeric';
+import { R7Command } from '@/class/commands';
 
-import Manhuagui from "@/func/api/manhuagui";
-import logger from "@/class/logger";
+import Manhuagui from '@/func/api/manhuagui';
+import logger from '@/class/logger';
 
-import type { local_subscribe } from "@/func/types/subData";
+import type { local_subscribe } from '@/func/types/subData';
 
 export default new R7Command({
   builder: new SlashCommandBuilder()
     .setName(`sub_manhuagui`)
-    .setNameLocalization(`zh-TW`, "訂閱漫畫")
+    .setNameLocalization(`zh-TW`, '訂閱漫畫')
     .setDescription(`新增漫畫到訂閱列表在更新時會有通知`)
     .addStringOption(
       new SlashCommandStringOption()
         .setName(`id`)
         .setDescription(`在 https://tw.manhuagui.com/ 上的漫畫id`)
-        .setRequired(true)
+        .setRequired(true),
     )
     .setDMPermission(false),
 
@@ -29,7 +29,7 @@ export default new R7Command({
   ephemeral: true,
   async execute(interaction: ChatInputCommandInteraction) {
     if (!interaction.inCachedGuild()) return;
-    const id = interaction.options.getString("id", true);
+    const id = interaction.options.getString('id', true);
 
     try {
       if (!isNumeric(id)) {
@@ -52,7 +52,8 @@ export default new R7Command({
           channel: interaction.channelId,
           sub: [],
         };
-      } else {
+      }
+      else {
         localData = await file.json();
       }
 
@@ -78,16 +79,17 @@ export default new R7Command({
       });
 
       logger.info(
-        `[manhuagui]${interaction.guildId} sub ${manhuagui.title.Ch}`
+        `[manhuagui]${interaction.guildId} sub ${manhuagui.title.Ch}`,
       );
-    } catch (error) {
+    }
+    catch (error) {
       if (error instanceof ManhuaguiError) {
         await interaction.editReply({
           content: `抓取資料失敗`,
         });
         logger.error(
           `[manhuagui] ${interaction.user.displayName} - 抓取資料失敗: ${error.message}`,
-          error
+          error,
         );
         return;
       }

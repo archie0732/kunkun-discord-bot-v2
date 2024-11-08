@@ -1,5 +1,5 @@
-import { Events } from "discord.js";
-import { R7EventHandler } from "@/class/events";
+import { Events } from 'discord.js';
+import { R7EventHandler } from '@/class/events';
 
 export default new R7EventHandler({
   event: Events.InteractionCreate,

@@ -1,8 +1,8 @@
-import "dotenv/config";
-import { R7Client } from "@/class/client";
-import { GatewayIntentBits } from "discord.js";
+import 'dotenv/config';
+import { R7Client } from '@/class/client';
+import { GatewayIntentBits } from 'discord.js';
 
-import type { ClientOptions } from "discord.js";
+import type { ClientOptions } from 'discord.js';
 
 const options = {
   intents: [GatewayIntentBits.Guilds],
@@ -10,4 +10,4 @@ const options = {
 
 const client = new R7Client(options);
 
-client.login(process.env["TOKEN"]).catch(console.error);
+client.login(process.env['TOKEN']).catch(console.error);

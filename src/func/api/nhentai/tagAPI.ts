@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import fetch from "node-fetch";
+import fetch from 'node-fetch';
 
 interface Picture {
   t: string;
@@ -45,20 +45,20 @@ export class DoujinList {
     for (const doujin of this.result) {
       for (const tag of doujin.tags) {
         if (
-          tag.type &&
-          tag.type === "artist" &&
-          (tag.name === this.tagName.replaceAll("-", " ") || tag.name === this.tagName)
+          tag.type
+          && tag.type === 'artist'
+          && (tag.name === this.tagName.replaceAll('-', ' ') || tag.name === this.tagName)
         ) {
           return tag;
         }
       }
     }
     console.log(`https://nhentai.net/api/galleries/search?query=${this.tagName}`);
-    throw "cannot find the tag by APIserach";
+    throw 'cannot find the tag by APIserach';
   }
 
   doujin(): Doujin {
-    if (this.result.length === 0) throw "no doujin find in the result list!";
+    if (this.result.length === 0) throw 'no doujin find in the result list!';
     return this.result[0];
   }
 
@@ -69,24 +69,22 @@ export class DoujinList {
 }
 
 export async function fetchSearch(name: string): Promise<DoujinList> {
-    const url = `https://nhentai.net/api/galleries/search?query=${name}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}:${url}`);}
-    
-    const data = await res.json();
-    if (!data) throw new Error(`cannot find json data`);
-    return new DoujinList(data, name);
-  
+  const url = `https://nhentai.net/api/galleries/search?query=${name}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}:${url}`);
+  }
+
+  const data = await res.json();
+  if (!data) throw new Error(`cannot find json data`);
+  return new DoujinList(data, name);
 }
 
 export async function getLastTagAPI(tagID: string): Promise<Doujin> {
-  
-    const url = `https://nhentai.net/api/galleries/tagged?tag_id=${tagID}`;
-    const res = await fetch(url);
-    if (!res.ok) throw `[nhentai]fetch api error: status code: ${res.status}:${url}`;
-    const data = await res.json();
+  const url = `https://nhentai.net/api/galleries/tagged?tag_id=${tagID}`;
+  const res = await fetch(url);
+  if (!res.ok) throw `[nhentai]fetch api error: status code: ${res.status}:${url}`;
+  const data = await res.json();
 
-    return new DoujinList(data, "").doujin();
-  
+  return new DoujinList(data, '').doujin();
 }

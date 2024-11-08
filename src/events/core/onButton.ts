@@ -1,5 +1,5 @@
-import { Events } from "discord.js";
-import { R7EventHandler } from "@/class/events";
+import { Events } from 'discord.js';
+import { R7EventHandler } from '@/class/events';
 
 export default new R7EventHandler({
   event: Events.InteractionCreate,
@@ -7,7 +7,7 @@ export default new R7EventHandler({
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isButton()) return;
 
-    const [commandName, buttonId] = interaction.customId.split(":");
+    const [commandName, buttonId] = interaction.customId.split(':');
     const command = this.commands.get(commandName);
 
     if (!command) return;

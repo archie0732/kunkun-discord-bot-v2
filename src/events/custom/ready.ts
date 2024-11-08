@@ -1,7 +1,7 @@
-import { Events } from "discord.js";
-import { R7EventHandler } from "@/class/events";
+import { Events } from 'discord.js';
+import { R7EventHandler } from '@/class/events';
 
-import logger from "@/class/logger";
+import logger from '@/class/logger';
 
 export default new R7EventHandler({
   event: Events.ClientReady,

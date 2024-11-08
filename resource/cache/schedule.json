@@ -1,0 +1,17 @@
+{
+  "schedule": [
+    {
+      "guild": "",
+      "channel": "",
+      "paln": [
+        {
+          "title": "",
+          "description": "",
+          "repeatDate": "",
+          "anoTime": "",
+          "mention": []
+        }
+      ]
+    }
+  ]
+}
