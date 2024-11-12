@@ -1,0 +1,33 @@
+name: Send Daily Discord Message
+
+on:
+  schedule:
+    # 設定為每天台灣時間早上 9:00 執行（UTC+8）
+    - cron: '0 1 * * *'
+  
+  # 允許手動觸發工作流程（用於測試）
+  workflow_dispatch:
+
+jobs:
+  send-message:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Send Discord Message
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{
+                 "embeds": [{
+                   "title": "每日提醒分子起床",
+                   "image":"https://cdn.koha.tw//wp-content/uploads/2024/10/%E5%91%80%E5%93%88%EF%BC%81%E3%80%8A%E5%90%89%E4%BC%8A%E5%8D%A1%E5%93%87%E3%80%8B%E7%83%8F%E8%96%A9%E5%A5%87%E4%B8%80%E7%95%AA%E8%B3%9E%E3%80%80%E6%BB%BF%E6%BB%BF%E5%85%94%E5%85%94%E8%B6%85%E7%98%8B%E7%8B%82%EF%BC%81%E6%8E%A1%E5%8F%96%E3%80%8C%E7%B7%9A%E4%B8%8A%E6%8A%BD%E7%8D%8E%E3%80%8D%E4%BD%86%E6%9C%89%E4%B8%80%E6%A2%9D%E4%BB%B6-1.jpg",
+                   "description": "起床了！！！！",
+                   "color": 5814783,
+                   "footer": {
+                     "text": "message from 乞丐超人dev"
+                   },
+                   "timestamp": "'$(date -u +'%Y-%m-%dT%H:%M:%SZ')'"
+                 }]
+               }' \
+               $DISCORD_WEBHOOK
