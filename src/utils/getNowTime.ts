@@ -13,4 +13,8 @@ export function getNowTime(): string {
   );
 }
 
-console.log(getNowTime());
+export const getNowDate = () => {
+  const now = new Date();
+
+  return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+};

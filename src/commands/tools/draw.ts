@@ -15,8 +15,7 @@ export default new R7Command({
       new SlashCommandBooleanOption()
         .setName('tag')
         .setDescription('是否要標記被抽中的人，預設為false'),
-    )
-    .setDMPermission(false),
+    ),
   defer: true,
   ephemeral: false,
   async execute(interaction) {
