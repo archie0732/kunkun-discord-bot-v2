@@ -4,7 +4,6 @@ import { R7EventHandler } from '@/class/events';
 import { join, resolve } from 'path';
 import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import { getNowDate } from '@/utils/getNowTime';
-import logger from '@/class/logger';
 
 export default new R7EventHandler({
   event: Events.MessageCreate,
