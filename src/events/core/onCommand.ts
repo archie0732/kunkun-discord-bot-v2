@@ -1,4 +1,4 @@
-import { Events } from 'discord.js';
+import { Events, MessageFlags } from 'discord.js';
 import { R7EventHandler } from '@/class/events';
 
 export default new R7EventHandler({
@@ -12,9 +12,10 @@ export default new R7EventHandler({
     if (!command) return;
 
     if (command.defer && !command.modals) {
-      await interaction.deferReply({
-        ephemeral: command.ephemeral,
-      });
+      await interaction.deferReply(command.ephemeral
+        ? { flags: [MessageFlags.Ephemeral] }
+        : {},
+      );
     }
 
     await command.execute.call(this, interaction);
