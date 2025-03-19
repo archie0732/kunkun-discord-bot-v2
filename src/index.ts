@@ -10,7 +10,9 @@ const options = {
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent],
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers,
+  ],
 } satisfies ClientOptions;
 
 const cacheFolder = resolve('.cache');

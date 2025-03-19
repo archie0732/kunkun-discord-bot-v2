@@ -1,16 +1,26 @@
 import { R7Command } from '@/class/commands';
+import logger from '@/class/logger';
+import { discordBotURL, localSaveImage } from '@/utils/const';
 import {
   EmbedBuilder,
   SlashCommandBooleanOption,
   SlashCommandBuilder,
+  SlashCommandStringOption,
 } from 'discord.js';
 
 export default new R7Command({
   builder: new SlashCommandBuilder()
-    .setName(`draw2486`)
-    .setNameLocalization(`zh-TW`, '抽取2486')
+    .setName(`draw`)
+    .setNameLocalization(`zh-TW`, '抽群組成員')
     .setDescription(`抽在群組的一人(不包含機器人)`)
-    .setNameLocalization(`zh-CN`, '抽取-2486')
+    .addStringOption(
+      new SlashCommandStringOption().setName('title').setNameLocalization('zh-TW', '標題')
+        .setDescription('set title').setDescriptionLocalization('zh-TW', '設置標題'),
+    )
+    .addStringOption(
+      new SlashCommandStringOption().setName('image').setNameLocalization('zh-TW', '圖片')
+        .setDescription('the image type just for jpg or png').setDescriptionLocalization('zh-TW', '圖片檔只收 jpg 或 png'),
+    )
     .addBooleanOption(
       new SlashCommandBooleanOption()
         .setName('tag')
@@ -19,50 +29,52 @@ export default new R7Command({
   defer: true,
   ephemeral: false,
   async execute(interaction) {
-    if (!interaction.inCachedGuild()) return;
-
-    const shouldMentionMember = interaction.options.getBoolean('tag');
-
-    const member = await interaction.guild.members.fetch();
-    const nonBotMembers = member.filter((member) => !member.user.bot);
-
-    if (!nonBotMembers.size) {
-      await interaction.editReply({
-        content: `伺服器沒有人`,
-      });
+    if (!interaction.inCachedGuild()) {
+      logger.error('nmsl');
       return;
     }
 
-    const randomMember = nonBotMembers.random()!;
+    try {
+      const shouldMentionMember = interaction.options.getBoolean('tag') ?? false;
+      const title = interaction.options.getString('title') ?? '被抽到怎麼不找找自己的問題';
+      const image = interaction.options.getString('image') ?? localSaveImage.find_u_problem;
 
-    const drawCommandId = interaction.client.application.commands.cache.findKey(
-      (command) => command.name == 'draw2486',
-    )!;
+      const member = await interaction.guild.members.fetch();
+      const nonBotMembers = member.filter((member) => !member.user.bot);
 
-    const drawMention = `</draw2486:${drawCommandId}>`;
+      if (!nonBotMembers.size) {
+        await interaction.editReply({ content: `伺服器沒有人` });
+        return;
+      }
 
-    const embed = new EmbedBuilder()
-      .setTitle(`${randomMember?.user.displayName}! 羅傑說你是阿斯芭樂`)
-      .setURL(`https://youtu.be/dQw4w9WgXcQ?si=aZ1j3MepifHFAfKY`)
-      .setDescription(`- 使用 ${drawMention} 來抽取下一位阿斯芭樂吧!`)
-      .setImage(`https://numeroscop.net/img/numbers/numerology/angel/2486.png`)
-      .setThumbnail(
-        randomMember.user.displayAvatarURL()
-        || 'https://memeprod.sgp1.digitaloceanspaces.com/user-template/48af98fc5cf6e34cf90c46adeb6e0ce5.png',
-      )
-      .setFooter({
-        text: `archie0732's kunkun-bot v2 with ts`,
-      });
+      const randomMember = nonBotMembers.random()!;
+      const drawCommandId = interaction.client.application.commands.cache.findKey(
+        (command) => command.name === 'draw2486',
+      );
 
-    await interaction.editReply({
-      content: `${randomMember} 你被抽中了!`,
-      embeds: [embed],
-      options: {
+      const drawMention = drawCommandId ? `</draw2486:${drawCommandId}>` : '`draw2486`';
+
+      const embed = new EmbedBuilder()
+        .setTitle(`${randomMember.user.displayName}, ${title}`)
+        .setURL(discordBotURL.rickroll)
+        .setDescription(`- 使用 ${drawMention} 來抽取下一位成員`)
+        .setImage(image)
+        .setThumbnail(randomMember.user.displayAvatarURL())
+        .setFooter({ text: discordBotURL.rickroll });
+
+      await interaction.editReply({
+        content: `${randomMember} 你被抽中了!`,
+        embeds: [embed],
         allowedMentions: {
           parse: [],
           users: shouldMentionMember ? [randomMember.id] : [],
         },
-      },
-    });
+      });
+    }
+    catch (err) {
+      console.error(err);
+      await interaction.editReply({ content: `⚠️ 出錯了：${err}` });
+    }
   },
+
 });
