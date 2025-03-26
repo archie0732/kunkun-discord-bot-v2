@@ -7,5 +7,6 @@ import onModalSubmit from './core/onModalSubmit';
 import ready from './custom/ready';
 import subUpdate from './custom/subUpdate';
 import dilySign from './custom/dailySign';
+import onAutocomplete from './core/onAutocomplete';
 
-export default [onButton, onCommand, onModalSubmit, ready, subUpdate, dilySign] as R7EventHandler[];
+export default [onButton, onCommand, onModalSubmit, ready, subUpdate, dilySign, onAutocomplete] as R7EventHandler[];

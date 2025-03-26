@@ -9,8 +9,6 @@ import { R7Command } from '@/class/commands';
 
 import logger from '@/class/logger';
 
-import type { local_subscribe } from '@/func/types/subData';
-
 import { load } from 'cheerio';
 import { ArchieMangaAPI, manhuaAPI } from '@/api/manhuagui/manhuaguiAPI';
 import type { R7Client } from '@/class/client';
@@ -18,9 +16,9 @@ import { discordBotURL, discordDescription } from '@/utils/const';
 
 export default new R7Command({
   builder: new SlashCommandBuilder()
-    .setName(`sub_manhuagui`)
-    .setNameLocalization(`zh-TW`, '訂閱漫畫')
-    .setDescription(`新增漫畫到訂閱列表在更新時會有通知`)
+    .setName(`search_manhuagui`)
+    .setNameLocalization(`zh-TW`, '搜尋漫畫')
+    .setDescription(`搜尋漫畫的詳細資訊`)
     .addStringOption(
       new SlashCommandStringOption()
         .setName(`keyword`)
@@ -30,12 +28,12 @@ export default new R7Command({
     ),
 
   defer: false,
-  ephemeral: true,
+  ephemeral: false,
   async execute(interaction: ChatInputCommandInteraction) {
     if (!interaction.inCachedGuild()) return;
     const id = interaction.options.getString('keyword', true);
 
-    await interaction.deferReply({ flags: 1 << 6 });
+    await interaction.deferReply();
 
     if (!isNumeric(id)) {
       await interaction.editReply({
@@ -44,50 +42,15 @@ export default new R7Command({
       return;
     }
 
-    const filePath = `./cache/manhuagui/${interaction.guild.id}.json`;
-    const file = Bun.file(filePath);
-
-    let localData: local_subscribe;
-
-    if (!(await file.exists())) {
-      localData = {
-        guild: `${interaction.guildId}`,
-        channel: interaction.channelId,
-        sub: [],
-      };
-    }
-    else {
-      localData = await file.json();
-    }
-
-    if (localData.sub.some((value) => value.id === id)) {
-      await interaction.editReply({
-        content: `此漫畫已在訂閱列表中`,
-        flags: 1 << 6,
-      });
-      return;
-    }
-
     const manhuagui = await manhuaAPI(id);
 
-    localData.sub.push({
-      name: manhuagui.title,
-      id: id!,
-      status: manhuagui.update.status,
-      last_up: manhuagui.update.chapter,
-      other: manhuagui.update.url,
-    });
-
-    Bun.write(file, JSON.stringify(localData, null, 2));
-
     await interaction.editReply({
-      content: `成功訂閱漫畫 : ${manhuagui.title}`,
-      flags: 1 << 6,
+      content: `您搜尋的結果 : [${manhuagui.title}](${manhuagui.url})`,
       embeds: [embedBuilder(this, manhuagui)],
     });
 
     logger.info(
-      `[discord]${interaction.guildId} sub ${manhuagui.title}`,
+      `[discord]Search manhuagui`,
     );
   },
 
@@ -103,7 +66,7 @@ export default new R7Command({
 });
 
 const searchManhuByKeyWord = async (keyword: string, page?: number) => {
-  const url = `https://www.manhuagui.com/s/${keyword === '' ? '總之就是' : keyword}_p${page ?? 1}.html`;
+  const url = `https://www.manhuagui.com/s/${keyword === '' ? '總' : keyword}_p${page ?? 1}.html`;
 
   const res = await fetch(url);
 
@@ -155,7 +118,7 @@ const embedBuilder = (client: R7Client, manhuagui: ArchieMangaAPI) => {
     name: `${client.user?.username}`,
     iconURL: client.user?.avatarURL() ?? 'https://newsimg.5054399.com/uploads/userup/1906/251634021345.gif',
   })
-    .setTitle(`以追蹤 ${manhuagui.title}`)
+    .setTitle(`${manhuagui.title}`)
     .setURL(manhuagui.url)
     .setThumbnail(manhuagui.thumb)
     .setDescription(

@@ -2,6 +2,7 @@ import { Events } from 'discord.js';
 import { R7EventHandler } from '@/class/events';
 import { upadteCheck } from '@/utils/subHandle';
 import logger from '@/class/logger';
+import { checkManhuaguiUpdate } from '@/api/manhuagui/manhuaguiAPI';
 
 export default new R7EventHandler({
   event: Events.ClientReady,
@@ -9,7 +10,7 @@ export default new R7EventHandler({
     await upadteCheck(this);
     setInterval(async () => {
       logger.info('check update...');
-      await upadteCheck(this);
+      await checkManhuaguiUpdate(this);
     }, 600000);
   },
 });
