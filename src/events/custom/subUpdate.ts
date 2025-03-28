@@ -11,6 +11,6 @@ export default new R7EventHandler({
     setInterval(async () => {
       logger.info('check update...');
       await checkManhuaguiUpdate(this);
-    }, 600000);
+    }, 6000000);
   },
 });
