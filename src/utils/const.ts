@@ -23,5 +23,6 @@ export const errorThumb
 export const disocrdPath = {
   mahuagui: resolve('.cache', 'manhuagui'),
   nhentai: resolve('.cache', 'nhentai'),
-  hanime1: resolve('.cache', 'hanime1')
+  hanime1: resolve('.cache', 'hanime1'),
+  user: resolve('.cache', 'user')
 }
