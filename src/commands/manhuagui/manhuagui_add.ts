@@ -9,12 +9,12 @@ import { R7Command } from '@/class/commands';
 
 import logger from '@/class/logger';
 
-import type { local_subscribe } from '@/func/types/subData';
 
 import { load } from 'cheerio';
 import { ArchieMangaAPI, manhuaAPI } from '@/api/manhuagui/manhuaguiAPI';
 import type { R7Client } from '@/class/client';
-import { discordBotURL, discordDescription } from '@/utils/const';
+import { discordBotURL, discordDescription, disocrdPath } from '@/utils/const';
+import type { ManhuaguiCache, SearchManhuaAPI } from '@/func/types';
 
 export default new R7Command({
   builder: new SlashCommandBuilder()
@@ -44,10 +44,10 @@ export default new R7Command({
       return;
     }
 
-    const filePath = `./cache/manhuagui/${interaction.guild.id}.json`;
+    const filePath = `${disocrdPath.mahuagui}/${interaction.guild.id}.json`;
     const file = Bun.file(filePath);
 
-    let localData: local_subscribe;
+    let localData: ManhuaguiCache;
 
     if (!(await file.exists())) {
       localData = {
@@ -74,8 +74,8 @@ export default new R7Command({
       name: manhuagui.title,
       id: id!,
       status: manhuagui.update.status,
-      last_up: manhuagui.update.chapter,
-      other: manhuagui.update.url,
+      new_chapter: manhuagui.update.chapter,
+      ChapterURL: manhuagui.update.url,
     });
 
     Bun.write(file, JSON.stringify(localData, null, 2));
@@ -192,16 +192,3 @@ const embedBuilder = (client: R7Client, manhuagui: ArchieMangaAPI) => {
     .setFooter({ text: discordDescription.footer }); ;
 };
 
-interface SearchManhuaAPI {
-  title: string;
-  id: string;
-
-  thumb: string;
-  author: string;
-
-  upadte: {
-    time: string;
-    status: string;
-    chapter: string;
-  };
-}

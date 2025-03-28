@@ -10,6 +10,7 @@ import type { SendableChannels } from 'discord.js';
 import logger from '@/class/logger';
 import { baseURL, discordBotURL, discordDescription } from '@/utils/const';
 import { load } from 'cheerio';
+import type { ManhuaguiCache, Update } from '@/func/types';
 
 export async function checkManhuaguiUpdate(client: R7Client) {
   const desk = readdirSync(resolve('.cache', 'manhuagui'));
@@ -24,19 +25,18 @@ export async function checkManhuaguiUpdate(client: R7Client) {
     }
     for (const sub of data.sub) {
       try {
-        const comic = await manhuaAPI(sub.cacheId);
-        logger.debug(comic.thumb);
-        if (comic.update.chapter === sub.latestChapter) {
+        const comic = await manhuaAPI(sub.id);
+        if (comic.update.chapter === sub.new_chapter) {
           continue;
         }
         flag = true;
         sendAnnouncement(client, comic, channel);
         sub.ChapterURL = comic.update.url;
-        sub.latestChapter = comic.update.chapter;
+        sub.new_chapter = comic.update.chapter;
         sub.status = comic.update.status;
       }
       catch (error) {
-        logger.error('fetch Manhuagui update fail', error);
+        logger.error('[manhuagui]manhuaguiAPI fetch Manhuagui update fail', error);
       }
     }
     if (flag) {
@@ -104,21 +104,16 @@ export const manhuaAPI = async (id: string) => {
   const response = await fetch(baseURL(id));
 
   if (!response.ok) {
-    logger.error('fetch data fail!');
-    throw new Error(`fetch manga detail fail, source web status: ${response.status}`);
+    logger.error('[manhuagui]manhuaguiAPI response is not ok!');
+    throw new Error(`fetch manga ${id} detail fail, source web status: ${response.status}`);
   }
 
-  logger.info('[ArchieManhuaguiAPI] fetch HTML success!!');
+  logger.info(`[manhuagui]manhuagiAPI fetch HTML ${baseURL(id)} success!!`);
 
   return new ArchieMangaAPI(await response.text(), id);
 };
 
-interface Update {
-  time: string;
-  chapter: string;
-  url: string;
-  status: string;
-}
+
 
 export class ArchieMangaAPI {
   title: string = '';
@@ -162,31 +157,3 @@ export class ArchieMangaAPI {
   }
 }
 
-export interface SearchManhuaAPI {
-  title: string;
-  id: string;
-
-  thumb: string;
-  author: string;
-
-  upadte: {
-    time: string;
-    status: string;
-    chapter: string;
-  };
-}
-
-export interface ManhuaguiCache {
-  guild: string;
-  channel: string;
-  sub: [
-    {
-      name: string;
-      cacheId: string;
-      status: string;
-      commonURL: string;
-      latestChapter: string;
-      ChapterURL: string;
-    },
-  ];
-}

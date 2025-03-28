@@ -1,4 +1,7 @@
 import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   ChatInputCommandInteraction,
   EmbedBuilder,
   SlashCommandBuilder,
@@ -13,6 +16,7 @@ import { load } from 'cheerio';
 import { ArchieMangaAPI, manhuaAPI } from '@/api/manhuagui/manhuaguiAPI';
 import type { R7Client } from '@/class/client';
 import { discordBotURL, discordDescription } from '@/utils/const';
+import type { SearchManhuaAPI } from '@/func/types';
 
 export default new R7Command({
   builder: new SlashCommandBuilder()
@@ -47,10 +51,13 @@ export default new R7Command({
     await interaction.editReply({
       content: `您搜尋的結果 : [${manhuagui.title}](${manhuagui.url})`,
       embeds: [embedBuilder(this, manhuagui)],
+      components: [buttonBuilder()],
+
     });
 
+
     logger.info(
-      `[discord]Search manhuagui`,
+      `[discord]Search manhuagui ${manhuagui.title}, and sent msg success!`,
     );
   },
 
@@ -152,19 +159,15 @@ const embedBuilder = (client: R7Client, manhuagui: ArchieMangaAPI) => {
         inline: true,
       },
     )
-    .setFooter({ text: discordDescription.footer }); ;
+    .setFooter({ text: discordDescription.footer });;
 };
 
-interface SearchManhuaAPI {
-  title: string;
-  id: string;
 
-  thumb: string;
-  author: string;
 
-  upadte: {
-    time: string;
-    status: string;
-    chapter: string;
-  };
+const buttonBuilder = () => {
+
+  const subManhua =  new ButtonBuilder().setCustomId('sub-manhua').setLabel('追蹤').setStyle(ButtonStyle.Primary)
+  const viewManhua = new ButtonBuilder().setCustomId('view-manhua').setLabel('預覽').setStyle(ButtonStyle.Secondary)
+
+  return new ActionRowBuilder<ButtonBuilder>().addComponents(subManhua,viewManhua)
 }
