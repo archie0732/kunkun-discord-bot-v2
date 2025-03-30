@@ -8,8 +8,9 @@ import { readFileSync } from 'fs';
 
 import logger from '@/class/logger';
 
-import type { local_subscribe } from '@/func/types/subData';
 import { R7Command } from '@/class/commands';
+import type { ManhuaguiCache } from '@/types/cache';
+import { disocrdPath } from '@/utils/const';
 
 export default new R7Command({
   builder: new SlashCommandBuilder()
@@ -40,7 +41,7 @@ export default new R7Command({
         .setRequired(true),
     ),
   defer: true,
-  ephemeral: true,
+  ephemeral: false,
   async execute(interaction) {
     const option = interaction.options.getString(`option`, true);
     const channel = interaction.options.getChannel<ChannelType.GuildText>(
@@ -48,8 +49,8 @@ export default new R7Command({
       true,
     );
 
-    const filePath = `./resource/${option}/${interaction.guildId}.json`;
-    const localData: local_subscribe = JSON.parse(
+    const filePath = `${disocrdPath.mahuagui}/${interaction.guildId}.json`;
+    const localData: ManhuaguiCache = JSON.parse(
       readFileSync(filePath, 'utf-8'),
     );
     logger.trace(filePath);
@@ -58,7 +59,7 @@ export default new R7Command({
     Bun.write(filePath, JSON.stringify(localData, null, 2));
 
     await interaction.editReply({
-      content: `已經將${option}移至${channel.name}`,
+      content: `${interaction.user.displayName}已經將${option}訂閱通知移至${channel.name}`,
     });
   },
 });

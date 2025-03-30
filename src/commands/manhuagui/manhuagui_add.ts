@@ -9,12 +9,11 @@ import { R7Command } from '@/class/commands';
 
 import logger from '@/class/logger';
 
-
-import { load } from 'cheerio';
-import { ArchieMangaAPI, manhuaAPI } from '@/api/manhuagui/manhuaguiAPI';
 import type { R7Client } from '@/class/client';
-import { discordBotURL, discordDescription, disocrdPath } from '@/utils/const';
-import type { ManhuaguiCache, SearchManhuaAPI } from '@/func/types';
+import { baseManhuaguiURL, discordBotURL, discordDescription, disocrdPath } from '@/utils/const';
+import type { ManhuaguiCache } from '@/types/cache';
+import { manhuaguiAPI, searchManhuaguiByKeyword } from '@/api/manhuagui/manhuaguiAPI';
+import type { ManhuaguiAPI } from '@/types/manhuagui';
 
 export default new R7Command({
   builder: new SlashCommandBuilder()
@@ -68,14 +67,14 @@ export default new R7Command({
       return;
     }
 
-    const manhuagui = await manhuaAPI(id);
+    const manhuagui = await manhuaguiAPI(id);
 
     localData.sub.push({
       name: manhuagui.title,
       id: id!,
       status: manhuagui.update.status,
       new_chapter: manhuagui.update.chapter,
-      ChapterURL: manhuagui.update.url,
+      ChapterURL: baseManhuaguiURL(manhuagui.id),
     });
 
     Bun.write(file, JSON.stringify(localData, null, 2));
@@ -93,73 +92,32 @@ export default new R7Command({
 
   async onAutocomplete(interaction) {
     const keyword = interaction.options.getString('keyword') ?? '更衣人偶';
-    const reult = await searchManhuByKeyWord(keyword);
+    const result = await searchManhuaguiByKeyword(keyword);
 
-    return reult.map((e) => ({
+    if (result === null) {
+      return [{
+        name: '總之就是非常可愛 fly me to the moon',
+        value: '27099',
+      }];
+    }
+
+    return result.map((e) => ({
       name: e.title,
       value: e.id,
     }));
   },
 });
 
-const searchManhuByKeyWord = async (keyword: string, page?: number) => {
-  const url = `https://www.manhuagui.com/s/${keyword === '' ? '總之就是' : keyword}_p${page ?? 1}.html`;
-
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    logger.warn(`[Archie Manhuagui]Search API fetch error, status: ${res.status},utl: ${url}`);
-    return [{
-      title: '总之就是非常可爱 fly me to the moon',
-      id: '27099',
-    }];
-  }
-
-  const html = await res.text();
-
-  const $ = load(html);
-
-  const manhuaResult: SearchManhuaAPI[] = [];
-
-  $('.book-result')
-    .find('li.cf')
-    .each((_, element) => {
-      const title = $(element).find('dt').find('a').attr('title');
-      const id = $(element).find('dt').find('a').attr('href')?.split('/')[2] ?? '';
-      const thumb = $(element).find('img').attr('src') ?? '';
-      const author = $(element).find('dd.tags').eq(2).text().split('：').pop() ?? '';
-      const status = $(element).find('span.red').eq(0).text() ?? '';
-      const time = $(element).find('span.red').eq(1).text() ?? '';
-      const chapter = $(element).find('a.blue').text() ?? '';
-
-      if (title) {
-        manhuaResult.push({
-          author,
-          id,
-          thumb,
-          title,
-          upadte: {
-            time,
-            chapter,
-            status: status,
-          },
-        });
-      }
-    });
-
-  return manhuaResult;
-};
-
-const embedBuilder = (client: R7Client, manhuagui: ArchieMangaAPI) => {
+const embedBuilder = (client: R7Client, manhuagui: ManhuaguiAPI) => {
   return new EmbedBuilder().setAuthor({
     name: `${client.user?.username}`,
     iconURL: client.user?.avatarURL() ?? 'https://newsimg.5054399.com/uploads/userup/1906/251634021345.gif',
   })
     .setTitle(`以追蹤 ${manhuagui.title}`)
-    .setURL(manhuagui.url)
-    .setThumbnail(manhuagui.thumb)
+    .setURL(baseManhuaguiURL(manhuagui.id))
+    .setThumbnail(manhuagui.thum)
     .setDescription(
-      `${manhuagui.descruption}`,
+      `${manhuagui.description}`,
     )
     .setTimestamp(Date.now())
     .addFields(
@@ -180,7 +138,7 @@ const embedBuilder = (client: R7Client, manhuagui: ArchieMangaAPI) => {
       },
       {
         name: `⏰ 更新`,
-        value: `${manhuagui.update.time} | [${manhuagui.update.chapter}](${manhuagui.update.url})`,
+        value: `${manhuagui.update.time} | [${manhuagui.update.chapter}](${manhuagui.update.chapterURL})`,
         inline: true,
       },
       {
@@ -191,4 +149,3 @@ const embedBuilder = (client: R7Client, manhuagui: ArchieMangaAPI) => {
     )
     .setFooter({ text: discordDescription.footer }); ;
 };
-

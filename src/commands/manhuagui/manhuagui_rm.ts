@@ -4,8 +4,7 @@ import { isNumeric } from '@/utils/isNumeric';
 import { R7Command } from '@/class/commands';
 
 import chalk from 'chalk';
-
-import type { local_subscribe } from '@/func/types/subData';
+import type { ManhuaguiCache } from '@/types/cache';
 
 export default new R7Command({
   builder: new SlashCommandBuilder()
@@ -53,7 +52,7 @@ export default new R7Command({
         return;
       }
 
-      const localData: local_subscribe = JSON.parse(
+      const localData: ManhuaguiCache = JSON.parse(
         readFileSync(filePath, 'utf-8'),
       );
       const originalLength = localData.sub.length;

@@ -8,9 +8,11 @@ import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import type { SendableChannels } from 'discord.js';
 
 import logger from '@/class/logger';
-import { baseURL, discordBotURL, discordDescription } from '@/utils/const';
+import { baseManhuaguiURL, discordBotURL, discordDescription } from '@/utils/const';
 import { load } from 'cheerio';
-import type { ManhuaguiCache, Update } from '@/func/types';
+
+import type { HomePageHotAPI, ManhuaguiAPI } from '@/types/manhuagui';
+import type { ManhuaguiCache } from '@/types/cache';
 
 export async function checkManhuaguiUpdate(client: R7Client) {
   const desk = readdirSync(resolve('.cache', 'manhuagui'));
@@ -25,13 +27,13 @@ export async function checkManhuaguiUpdate(client: R7Client) {
     }
     for (const sub of data.sub) {
       try {
-        const comic = await manhuaAPI(sub.id);
+        const comic = await manhuaguiAPI(sub.id);
         if (comic.update.chapter === sub.new_chapter) {
           continue;
         }
         flag = true;
         sendAnnouncement(client, comic, channel);
-        sub.ChapterURL = comic.update.url;
+        sub.ChapterURL = comic.update.chapterURL;
         sub.new_chapter = comic.update.chapter;
         sub.status = comic.update.status;
       }
@@ -46,17 +48,17 @@ export async function checkManhuaguiUpdate(client: R7Client) {
   }
 }
 
-export async function sendAnnouncement(client: R7Client, manhuagui: ArchieMangaAPI, channel: SendableChannels) {
+export async function sendAnnouncement(client: R7Client, manhuagui: ManhuaguiAPI, channel: SendableChannels) {
   const embed = new EmbedBuilder()
     .setAuthor({
       name: `${client.user?.username}`,
       iconURL: client.user?.avatarURL() ?? 'https://newsimg.5054399.com/uploads/userup/1906/251634021345.gif',
     })
     .setTitle(`${manhuagui.title} 更新至 ${manhuagui.update.chapter}`)
-    .setURL(manhuagui.update.url)
-    .setThumbnail(manhuagui.thumb)
+    .setURL(manhuagui.update.chapterURL)
+    .setThumbnail(manhuagui.thum)
     .setDescription(
-      `${manhuagui.descruption}`,
+      `${manhuagui.description}`,
     )
     .setTimestamp(Date.now())
     .addFields(
@@ -77,7 +79,7 @@ export async function sendAnnouncement(client: R7Client, manhuagui: ArchieMangaA
       },
       {
         name: `⏰ 更新`,
-        value: `${manhuagui.update.time} | ${manhuagui.update.chapter}`,
+        value: `${manhuagui.update.time} | [${manhuagui.update.chapter}](${manhuagui.update.chapterURL})`,
         inline: true,
       },
       {
@@ -90,7 +92,7 @@ export async function sendAnnouncement(client: R7Client, manhuagui: ArchieMangaA
 
   try {
     await channel.send({
-      content: `您在[mahuagui](${discordBotURL.manhuaguiBase})訂閱的 [${manhuagui.title}](${discordBotURL.manhuaguiBase}/comic/${manhuagui.id}) 更新了 [${manhuagui.update.chapter}](${manhuagui.update.url})`,
+      content: `您在[mahuagui](${discordBotURL.manhuaguiBase})訂閱的 [${manhuagui.title}](${discordBotURL.manhuaguiBase}/comic/${manhuagui.id}) 更新了 [${manhuagui.update.chapter}](${manhuagui.update.chapterURL})`,
       embeds: [embed],
     });
     logger.info('[manhugui]Have send update msg');
@@ -100,60 +102,131 @@ export async function sendAnnouncement(client: R7Client, manhuagui: ArchieMangaA
   }
 }
 
-export const manhuaAPI = async (id: string) => {
-  const response = await fetch(baseURL(id));
+export const manhuaguiAPI = async (id: string): Promise<ManhuaguiAPI> => {
+  const url = baseManhuaguiURL(id);
 
-  if (!response.ok) {
-    logger.error('[manhuagui]manhuaguiAPI response is not ok!');
-    throw new Error(`fetch manga ${id} detail fail, source web status: ${response.status}`);
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    logger.error(`[manhuagui]ManhuaguiAPI fetch ${url} error, status: ${res.status}`);
+    throw new Error(`[manhuagui]ManhuaguiAPI fetch ${url} error, status: ${res.status}`);
   }
 
-  logger.info(`[manhuagui]manhuagiAPI fetch HTML ${baseURL(id)} success!!`);
+  const html = await res.text();
 
-  return new ArchieMangaAPI(await response.text(), id);
+  const $ = load(html);
+
+  const title = $('h1').text();
+  const thum = 'https:' + $('.hcover').find('img').attr('src');
+
+  const tags = $('.detail-list').find('li').eq(1).find('span').eq(0).text().split('：').pop() ?? '';
+  const author = $('.detail-list').find('li').eq(1).find('span').eq(1).text().split('：').pop() ?? '';
+  const status = $('li.status').find('span.red').eq(0).text() ?? '';
+  const time = $('li.status').find('span.red').eq(1).text() ?? '';
+  const chapterURL = 'https://tw.manhuagui.com' + $('li.status').find('a.blue').attr('href');
+  const chapter = $('li.status').find('a.blue').text() ?? '';
+
+  const rank = $('.rank').find('strong').text() ?? '';
+
+  const description = $('#intro-cut').text() ?? '';
+
+  return {
+    title, id, tags, thum, author, rank, description,
+    update: {
+      time, chapterURL, chapter, status,
+    },
+  } as ManhuaguiAPI;
 };
 
+export const searchManhuaguiByKeyword = async (keyword: string): Promise<ManhuaguiAPI[] | null> => {
+  const url = `https://tw.manhuagui.com/s/${keyword === '' ? '總之' : keyword}.html`;
 
+  const res = await fetch(url);
 
-export class ArchieMangaAPI {
-  title: string = '';
-  id: string = '';
-  url: string = '';
-  thumb: string = '';
-  author: string = '';
-  rank: string = '';
-  update: Update = {
-    time: '',
-    chapter: '',
-    url: '',
-    status: '',
-  };
+  const searchResult: ManhuaguiAPI[] = [];
 
-  descruption: string = '';
-
-  constructor(html: string, id: string) {
-    this.url = baseURL(id);
-    this.id = id;
-
-    const $ = load(html);
-    this.title = $('h1').text();
-    this.thumb = 'https:' + $('p.hcover').find('img').attr('src');
-    const status = $('span.red').eq(0).text();
-
-    const chapter = $('a.blue').eq(0).text();
-    const updateTime = $('span.red').eq(1).text();
-    this.author = $('ul.detail-list').find('li').eq(1).text().split('：').pop() ?? '';
-
-    this.rank = $('.rank').find('strong').text();
-    const chapterurl = discordBotURL.manhuaguiBase + $('a.blue').attr('href');
-    this.descruption = $('.book-intro').find('p').text();
-
-    this.update = {
-      chapter,
-      url: chapterurl,
-      status,
-      time: updateTime,
-    };
+  if (!res.ok) {
+    return null;
   }
-}
 
+  const html = await res.text();
+  const $ = load(html);
+
+  $('.book-result').find('li').each((_, element) => {
+    const title = $(element).find('a.bcover').attr('title') ?? '';
+    const id = $(element).find('a.bcover').attr('href')?.split('/')[2] ?? '';
+    const thum = 'https:' + $(element).find('a.bcover').find('img').attr('src');
+    const status = $(element).find('dd.tags').eq(0).find('span.red').eq(0).text();
+    const time = $(element).find('dd.tags').eq(0).find('span.red').eq(1).text();
+    const chapterURL = 'https://tw.manhuagui.com/' + $(element).find('dd.tags').eq(0).find('a').attr('href');
+    const chapter = $(element).find('dd.tags').eq(0).find('a').text();
+    const author = $(element).find('dd.tags').eq(2).find('a').text();
+
+    const tags = $(element).find('dd.tags').eq(1).find('span').eq(2).text().split('：').pop() ?? '';
+
+    const description = $(element).find('dd.intro').text() ?? '';
+
+    const rank = $(element).find('p.score-avg').find('strong').text();
+
+    if (title) {
+      searchResult.push({
+        title,
+        author,
+        description,
+        id,
+        rank,
+        tags,
+        thum,
+        update: {
+          chapter,
+          chapterURL,
+          status,
+          time,
+        },
+      });
+    }
+  });
+
+  return searchResult;
+};
+
+export const manhuaguiHot = async (): Promise<HomePageHotAPI[]> => {
+  const url = 'https://tw.manhuagui.com/';
+
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error(`[manhuagui]ManhuaguiHot fetch home page error, status: ${res.status}`);
+  }
+  const html = await res.text();
+  const $ = load(html);
+
+  const result: HomePageHotAPI[] = [];
+
+  $('.cmt-cont').find('li').each((_, element) => {
+    const title = $(element).find('a.bcover').attr('title') ?? '';
+    const url = 'https://tw.manhuagui.com/' + $(element).find('a.bcover').attr('href');
+    const id = url.split('/')[5];
+    const thum = $(element).find('a.bcover').find('img').attr('src') ?? $(element).find('a.bcover').find('img').attr('date-src');
+    const update = $(element).find('span.tt').text() ?? '';
+
+    if (title !== '') {
+      result.push({
+        title, update, url, id,
+        thum: 'https:' + thum,
+      });
+    }
+  });
+
+  /**
+     * 1-12: hot
+     * 13-24: end-hot
+     * 25-36: new
+     * 37-48: 2020
+     *
+     */
+
+  // logger.debug(JSON.stringify(result[0]));
+
+  return result;
+};
