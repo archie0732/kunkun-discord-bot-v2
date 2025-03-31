@@ -8,5 +8,7 @@ import ready from './custom/ready';
 import subUpdate from './custom/subUpdate';
 import dilySign from './custom/dailySign';
 import onAutocomplete from './core/onAutocomplete';
+import onSelectMenu from './core/onSelectMenu';
+import hoyoSign from './custom/hoyo-sign';
 
-export default [onButton, onCommand, onModalSubmit, ready, subUpdate, dilySign, onAutocomplete] as R7EventHandler[];
+export default [onButton, onCommand, onModalSubmit, ready, subUpdate, dilySign, onAutocomplete, onSelectMenu, hoyoSign] as R7EventHandler[];

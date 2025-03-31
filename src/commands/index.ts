@@ -7,5 +7,6 @@ import manhuagui_add from './manhuagui/manhuagui_add';
 import manhuagui_search from './manhuagui/manhuagui_search';
 import manhuagui_hot from './manhuagui/manhuagui_hot';
 import setChannel from './tools/setChannel';
+import auto_sign from './hoyo/auto_sign';
 
-export default [ping, setDailySign, draw, manhuagui_add, manhuagui_search, manhuagui_hot, setChannel] as R7Command[];
+export default [ping, setDailySign, draw, manhuagui_add, manhuagui_search, manhuagui_hot, setChannel, auto_sign] as R7Command[];

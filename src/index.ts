@@ -17,7 +17,7 @@ const options = {
 
 const cacheFolder = resolve('.cache');
 
-for (const subfolder of ['guild', 'hanime1', 'nhentai', 'manhuagui']) {
+for (const subfolder of ['guild', 'hanime1', 'nhentai', 'manhuagui', 'user']) {
   mkdirSync(join(cacheFolder, subfolder), { recursive: true });
 }
 

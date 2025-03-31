@@ -1,3 +1,5 @@
+import type { GameType } from './hoyo';
+
 export interface ManhuaguiCache {
   guild: string;
   channel: string;
@@ -9,4 +11,12 @@ export interface ManhuaguiCache {
     new_chapter: string;
     ChapterURL: string;
   }[];
+}
+
+export interface CacheUser {
+  userId: string;
+  hoyoAutoSign: {
+    token: string;
+    game: GameType;
+  };
 }
