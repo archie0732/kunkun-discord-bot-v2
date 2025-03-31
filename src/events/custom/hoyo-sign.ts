@@ -46,37 +46,37 @@ const signSchedule = async (client: R7Client) => {
       const user = await client.users.fetch(data.userId);
 
       const embeds = new EmbedBuilder().setAuthor({ name: client.user?.displayName ?? 'i Kun v4', iconURL: client.user?.displayAvatarURL() })
-        .setTitle('✏️ 今日的簽到結果')
-        .setDescription('‼ 如果顯示`簽到失敗` 或 `尚未登入`，請重新使用`/hoyolab-auto-sign` 指令更新token')
+        .setTitle('📝 今日的簽到結果')
+        .setDescription('‼️ 如果顯示`簽到失敗` 或 `尚未登入`\n請重新使用`/hoyolab-auto-sign` 指令更新`token`')
         .setThumbnail(client.user?.displayAvatarURL() ?? 'https://cdn.discordapp.com/avatars/873116401429250078/5a2d63f0dcac501128076c78de0202b9.webp')
         .setFields([
           {
-            name: '🧐 Genshin',
+            name: '😎 Genshin',
             value: result.Genshin,
           },
           {
-            name: '🧐 Honkai 3',
+            name: '😶‍🌫️ Honkai 3',
             value: result.Honkai_3,
           },
           {
-            name: '🧐 Star Rail',
+            name: '🤓 Star Rail',
             value: result.Star_Rail,
           },
           {
-            name: '🧐 Zenless Zone Zero',
+            name: '🤡 Zenless Zone Zero',
             value: result.Zenless_Zone_Zero,
           },
         ]);
 
       user.send({
-        content: '今天的hoyolab自動簽到結果~',
+        content: '🎉 今天的hoyolab自動簽到結果~',
         embeds: [embeds],
       });
 
       logger.info(`已向${user.globalName} 發送簽到完成通知！`);
     }
     catch (error) {
-      logger.error('aaaaaa', error);
+      logger.error('[discordbot]hoyolab-auto-sign fail', error);
     }
   }
 };
