@@ -4,6 +4,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashComman
 
 import type { HomePageHotAPI } from '@/types/manhuagui';
 import { serachEmbedBuilder } from './manhuagui_search';
+import { getCommandsLink } from '@/utils';
 
 let result: HomePageHotAPI[] = [];
 
@@ -30,6 +31,15 @@ export default new R7Command({
   async onButton(interaction, buttonId) {
     // logger.debug(`click button: ${buttonId}`);
 
+    if (buttonId === 'sub-button') {
+      const search = await getCommandsLink(this, 'search_manhuagui');
+      const sub = await getCommandsLink(this, 'sub_manhuagui');
+      await interaction.followUp({
+        content: `此功能目前還在實作中，請先使用:\n- ${search}\n- ${sub}\n替代`,
+      });
+      return;
+    }
+
     const match = buttonId.match(/(next|last|detail)-hot-(\d+)/);
 
     if (!match) return;
@@ -46,9 +56,12 @@ export default new R7Command({
 
     if (action === 'detail') {
       const manhuagui = await manhuaguiAPI(result[index].id);
+      const subButton = new ButtonBuilder().setCustomId('manhuagui_hot:sub-button').setLabel('追蹤').setStyle(ButtonStyle.Primary);
+      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(subButton);
       await interaction.followUp({
         content: '您搜尋的漫畫'!,
         embeds: [serachEmbedBuilder(this, manhuagui)],
+        components: [row],
       });
       return;
     }

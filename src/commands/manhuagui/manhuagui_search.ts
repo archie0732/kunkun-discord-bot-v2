@@ -9,13 +9,18 @@ import {
 } from 'discord.js';
 import { isNumeric } from '@/utils/isNumeric';
 import { R7Command } from '@/class/commands';
+import { baseManhuaguiURL, discordBotURL, discordDescription, disocrdPath } from '@/utils/const';
+import { createManhuaguiCacheData, getCommandsLink } from '@/utils';
+import { manhuaguiAPI, searchManhuaguiByKeyword } from '@/api/manhuagui/manhuaguiAPI';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
 
 import logger from '@/class/logger';
 
-import type { R7Client } from '@/class/client';
-import { baseManhuaguiURL, discordBotURL, discordDescription } from '@/utils/const';
-import { manhuaguiAPI, searchManhuaguiByKeyword } from '@/api/manhuagui/manhuaguiAPI';
 import type { ManhuaguiAPI } from '@/types/manhuagui';
+import type { R7Client } from '@/class/client';
+
+let manhuagui: ManhuaguiAPI;
 
 export default new R7Command({
   builder: new SlashCommandBuilder()
@@ -30,13 +35,11 @@ export default new R7Command({
         .setAutocomplete(true),
     ),
 
-  defer: false,
+  defer: true,
   ephemeral: false,
   async execute(interaction: ChatInputCommandInteraction) {
     if (!interaction.inCachedGuild()) return;
     const id = interaction.options.getString('keyword', true);
-
-    await interaction.deferReply();
 
     if (!isNumeric(id)) {
       await interaction.editReply({
@@ -46,7 +49,7 @@ export default new R7Command({
       return;
     }
 
-    const manhuagui = await manhuaguiAPI(id);
+    manhuagui = await manhuaguiAPI(id);
 
     await interaction.editReply({
       content: `您搜尋的結果 : [${manhuagui.title}](${baseManhuaguiURL(manhuagui.id)})`,
@@ -75,6 +78,44 @@ export default new R7Command({
       name: e.title,
       value: e.id,
     }));
+  },
+
+  async onButton(interaction, buttonId) {
+    if (buttonId !== 'sub-manhua') return;
+
+    if (!manhuagui) {
+      await interaction.followUp({
+        content: '抱歉，發生錯誤。請使用/sub_manhuagui來追蹤漫畫',
+      });
+      return;
+    }
+
+    const cacheData = createManhuaguiCacheData(interaction.guildId, interaction.channelId);
+    if (cacheData.sub.find((e) => e.id === manhuagui.id)) {
+      await interaction.followUp({
+        content: '你已經訂閱過該漫畫了~',
+      });
+      return;
+    }
+
+    const channel = await this.channels.fetch(cacheData.channel);
+
+    cacheData.sub.push({
+      name: manhuagui.title,
+      ChapterURL: manhuagui.update.chapterURL,
+      id: manhuagui.id,
+      new_chapter: manhuagui.update.chapter,
+      status: manhuagui.update.status,
+    });
+
+    writeFileSync(join(disocrdPath.mahuagui, `${interaction.guildId}.json`), JSON.stringify(cacheData, null, 2), 'utf-8');
+
+    const commandURL = await getCommandsLink(this, 'set_channel');
+
+    await interaction.followUp({
+      // </rm_nhentai: 1268082123466739765> 1270769503428415575
+      content: `🎉 成功訂閱漫畫!\n漫畫更新時會在 ${channel?.url} 發布通知\n如果要更改通知位置，請使用 ${commandURL}`,
+    });
   },
 });
 
@@ -122,11 +163,11 @@ export const serachEmbedBuilder = (client: R7Client, manhuagui: ManhuaguiAPI) =>
         inline: true,
       },
     )
-    .setFooter({ text: discordDescription.footer }); ;
+    .setFooter({ text: discordDescription.footer });
 };
 
 const buttonBuilder = () => {
-  const subManhua = new ButtonBuilder().setCustomId('sub-manhua').setLabel('追蹤').setStyle(ButtonStyle.Primary);
+  const subManhua = new ButtonBuilder().setCustomId('search_manhuagui:sub-manhua').setLabel('追蹤').setStyle(ButtonStyle.Primary);
   const viewManhua = new ButtonBuilder().setCustomId('view-manhua').setLabel('預覽').setStyle(ButtonStyle.Secondary);
 
   return new ActionRowBuilder<ButtonBuilder>().addComponents(subManhua, viewManhua);
