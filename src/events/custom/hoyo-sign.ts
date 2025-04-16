@@ -48,7 +48,7 @@ const signSchedule = async (client: R7Client) => {
       const embeds = new EmbedBuilder().setAuthor({ name: client.user?.displayName ?? 'i Kun v4', iconURL: client.user?.displayAvatarURL() })
         .setTitle('📝 今日的簽到結果')
         .setDescription('‼️ 如果顯示`簽到失敗` 或 `尚未登入`\n請重新使用`/hoyolab-auto-sign` 指令更新`token`')
-        .setThumbnail(client.user?.displayAvatarURL() ?? 'https://cdn.discordapp.com/avatars/873116401429250078/5a2d63f0dcac501128076c78de0202b9.webp')
+        .setThumbnail('https://upload.wikimedia.org/wikipedia/zh/f/fc/%E5%8E%9F%E7%A5%9E_%E5%9C%8B%E9%9A%9B%E7%89%88.jpeg')
         .setFields([
           {
             name: '😎 Genshin',
