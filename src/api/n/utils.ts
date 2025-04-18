@@ -21,7 +21,7 @@ export const rowAPIToR7API = (doujin: Doujin): ArchieNSerachAPI => {
       japanese,
       pretty,
     },
-    thumb: `https://i3.nhentai.net/galleries/${doujin.media_id}/thumb.${typeChange(doujin.images.cover.t)}`,
+    thumb: `https://t3.nhentai.net/galleries/${doujin.media_id}/thumb${typeChange(doujin.images.cover.t)}`,
     page: doujin.num_pages.toString(),
     author: authors || undefined,
     tags: tags || undefined,

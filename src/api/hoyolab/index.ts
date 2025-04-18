@@ -6,7 +6,6 @@ export const autoSign = async (game: GameType, token: string) => {
     Honkai_3: '未設定',
     Star_Rail: '未設定',
     Zenless_Zone_Zero: '未設定',
-
   };
   if (game.Genshin) {
     result.Genshin = (await httpsPOST(urlDict.Genshin, token));
