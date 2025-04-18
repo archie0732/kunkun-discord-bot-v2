@@ -38,14 +38,20 @@ export interface SearchDojin {
   result: Doujin[];
 }
 
-export interface Nhnetai {
-  guild: string;
-  channel: string;
-  sub: {
-    name: string;
-    commonId: string;
-    latestDoujin: string;
-    doujinId: number;
-    doujinURL: string;
-  }[];
+export interface ArchieNSerachAPI {
+  sourceURL: string;
+  r7mangaURL: string;
+  id: string;
+  title: {
+    english?: string;
+    japanese?: string;
+    pretty?: string;
+  };
+  mediaID: string;
+  thumb: string;
+  page: string;
+  author?: string;
+  tags?: string;
+  character?: string;
+  parody?: string;
 }

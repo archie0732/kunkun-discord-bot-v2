@@ -23,5 +23,4 @@ for (const subfolder of ['guild', 'hanime1', 'nhentai', 'manhuagui', 'user']) {
 
 const client = new R7Client(options);
 
-
 client.login(process.env['TOKEN']).catch(console.error);
