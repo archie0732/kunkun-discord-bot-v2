@@ -20,10 +20,14 @@ export const novelSearch = async (keyword: string, pageNum: number): Promise<Nov
   $('.gsc-expansionArea').find('.gsc-webResult.gsc-result').each((_, el) => {
     //console.log($(el).find('.gs-bidi-start-align.gs-visibleUrl.gs-visibleUrl-breadcrumb').html());
     if ($(el).find('.gs-bidi-start-align.gs-visibleUrl.gs-visibleUrl-breadcrumb').find('span').text() === 'tw.linovelib.com › novel') {
-      novels.push({
-        title: $(el).find('a').eq(0).text(),
-        id: $(el).find('a').eq(0).attr('href')?.split('/').pop()?.replace('.html', '') ?? ''
-      })
+      const href = $(el).find('a').eq(0).attr('href');
+      // Only match URLs in format https://tw.linovelib.com/novel/{id}.html
+      if (href?.match(/^https:\/\/tw\.linovelib\.com\/novel\/\d+\.html$/)) {
+        novels.push({
+          title: $(el).find('a').eq(0).text().split('_')[0].replace('線上看', '').trim(),
+          id: href.split('/').pop()?.replace('.html', '') ?? ''
+        });
+      }
     }
   })
 
@@ -31,5 +35,4 @@ export const novelSearch = async (keyword: string, pageNum: number): Promise<Nov
 }
 
 //649de34f5e63448cb
-
-novelSearch('鄰座', 1).then(console.log)
+//novelSearch('男女', 1).then(console.log)

@@ -1,5 +1,5 @@
 import { load } from "cheerio";
-import { novelChapterURL, noveURL } from "./utils"
+import { baseURL, novelChapterURL, noveURL } from "./utils"
 import type { NovelChapter, NovelDetail } from "./interface";
 
 export const novelDetail = async (novelId: string): Promise<NovelDetail> => {
@@ -39,6 +39,7 @@ export const novelDetail = async (novelId: string): Promise<NovelDetail> => {
 
 
   return {
+    id: novelId,
     title,
     cover,
     author,
@@ -50,7 +51,7 @@ export const novelDetail = async (novelId: string): Promise<NovelDetail> => {
   } as NovelDetail;
 }
 
-export const novelChapter = async (novelId: string, chapterIndex: number): Promise<NovelChapter[]> => {
+export const novelChapter = async (novelId: string): Promise<NovelChapter[]> => {
   const chapter: NovelChapter[] = [];
 
   const url = novelChapterURL(novelId);
@@ -66,21 +67,27 @@ export const novelChapter = async (novelId: string, chapterIndex: number): Promi
   const html = await res.text();
   const $ = load(html);
 
-  const check = $('ul.volume-chapters').eq(chapterIndex - 1).text()
+  $('ul.volume-chapters').each((_, el) => {
+    const chapterTitle = $(el).find('h3').text().trim()
+    const volList: { title: string, url: string }[] = []
 
-  if (check === '') {
-    throw new Error(`[linovelibAPI] Failed to fetch novel chapter: ${chapterIndex}`);
-  }
-
-  $('ul.volume-chapters').eq(chapterIndex - 1).find('li.chapter-li.jsChapter').each((_, el) => {
-    chapter.push({
-      title: $(el).find('span.chapter-index').text().trim(),
-      url: $(el).find('a.chapter-li-a').attr('href') ?? ''
+    $(el).find('li.chapter-li.jsChapter').each((_, el) => {
+      volList.push({
+        title: $(el).find('span.chapter-index').text().trim(),
+        url: baseURL + $(el).find('a.chapter-li-a').attr('href')
+      })
     })
+
+    chapter.push({
+      chapterTitle,
+      vol: volList
+    })
+
   })
 
   return chapter;
 }
 
+
 //novelDetail('4600').then(console.log)
-novelChapter('4600', 3).then(console.log)
+//novelChapter('2956').then(e => console.log(e[0].vol))

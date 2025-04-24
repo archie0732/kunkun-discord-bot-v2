@@ -1,4 +1,5 @@
 export interface NovelDetail {
+  id: string;
   title: string;
   cover: string;
   author: string;
@@ -10,12 +11,24 @@ export interface NovelDetail {
 }
 
 export interface NovelChapter {
-  title: string;
-  url: string;
+  chapterTitle: string;
+  vol: {
+    title: string;
+    url: string;
+  }[]
 }
 
 export interface NovelSearch {
   title: string;
   id: string;
+}
+
+export interface NovelContent {
+  title: string;
+  chapterTitle: string;
+  content: string[];
+  img: string[];
+  nextChapter: string;
+  prevChapter: string;
 }
 
