@@ -12,7 +12,7 @@ let chapterList: NovelChapter[] = [];
 
 export default new R7Command({
   builder: new SlashCommandBuilder()
-    .setName('linovelib_view')
+    .setName('view_linovelib')
     .setNameLocalization('zh-TW', '小說觀看')
     .setDescription('View a novel on linovelib')
     .setDescriptionLocalization('zh-TW', '在 discord 上觀看輕小說')
@@ -78,25 +78,38 @@ export default new R7Command({
   },
 
   async onAutocomplete(interaction) {
-    const focusedOption = interaction.options.getFocused(true);
-    const keyword = interaction.options.getString('keyword');
-    const chapter = interaction.options.getString('chapter');
-
     try {
-      if (focusedOption.name === 'keyword') {
-        const results = await novelSearch(focusedOption.value === '' ? '艾莉' : focusedOption.value, 1);
+      const focusedOption = interaction.options.getFocused(true);
+      const keyword = interaction.options.getString('keyword');
+      const chapter = interaction.options.getString('chapter');
 
-        if (results.length === 0) {
+      // 如果互動已經過期，直接返回
+      if (!interaction.isAutocomplete()) {
+        return [];
+      }
+
+      if (focusedOption.name === 'keyword') {
+        try {
+          const results = await novelSearch(focusedOption.value === '' ? '艾莉' : focusedOption.value, 1);
+
+          if (results.length === 0) {
+            return [{
+              name: '找不到任何結果',
+              value: '-1',
+            }];
+          }
+
+          return results.slice(0, 25).map((result) => ({
+            name: result.title,
+            value: result.id,
+          }));
+        } catch (error) {
+          console.error('Keyword search error:', error);
           return [{
-            name: '找不到任何結果',
-            value: '-1',
+            name: '搜尋時發生錯誤',
+            value: '-2',
           }];
         }
-
-        return results.slice(0, 25).map((result) => ({
-          name: result.title,
-          value: result.id,
-        }));
       }
       else if (focusedOption.name === 'chapter') {
         if (!keyword || keyword === '-1' || keyword === '-2') {
@@ -106,15 +119,23 @@ export default new R7Command({
           }];
         }
 
-        if (currentNovelId !== keyword) {
-          chapterList = await novelChapter(keyword);
-          currentNovelId = keyword;
-        }
+        try {
+          if (currentNovelId !== keyword) {
+            chapterList = await novelChapter(keyword);
+            currentNovelId = keyword;
+          }
 
-        return chapterList.slice(0, 25).map((chapter, index) => ({
-          name: `${index + 1}. ${chapter.chapterTitle}`,
-          value: index.toString(),
-        }));
+          return chapterList.slice(0, 25).map((chapter, index) => ({
+            name: `${index + 1}. ${chapter.chapterTitle}`,
+            value: index.toString(),
+          }));
+        } catch (error) {
+          console.error('Chapter fetch error:', error);
+          return [{
+            name: '獲取章節時發生錯誤',
+            value: '-2',
+          }];
+        }
       }
       else if (focusedOption.name === 'vol') {
         if (!keyword || !chapter || keyword === '-1' || keyword === '-2' || chapter === '-1' || chapter === '-2') {
@@ -124,27 +145,35 @@ export default new R7Command({
           }];
         }
 
-        if (currentNovelId !== keyword) {
-          chapterList = await novelChapter(keyword);
-          currentNovelId = keyword;
-        }
+        try {
+          if (currentNovelId !== keyword) {
+            chapterList = await novelChapter(keyword);
+            currentNovelId = keyword;
+          }
 
-        const chapterIndex = parseInt(chapter);
-        if (isNaN(chapterIndex) || chapterIndex < 0 || chapterIndex >= chapterList.length) {
+          const chapterIndex = parseInt(chapter);
+          if (isNaN(chapterIndex) || chapterIndex < 0 || chapterIndex >= chapterList.length) {
+            return [{
+              name: '無效的卷數',
+              value: '-1',
+            }];
+          }
+
+          return chapterList[chapterIndex].vol.slice(0, 25).map((vol, index) => ({
+            name: `${index + 1}. ${vol.title}`,
+            value: index.toString(),
+          }));
+        } catch (error) {
+          console.error('Volume fetch error:', error);
           return [{
-            name: '無效的卷數',
-            value: '-1',
+            name: '獲取卷數時發生錯誤',
+            value: '-2',
           }];
         }
-
-        return chapterList[chapterIndex].vol.slice(0, 25).map((vol, index) => ({
-          name: `${index + 1}. ${vol.title}`,
-          value: index.toString(),
-        }));
       }
-    }
-    catch (error) {
-      console.error('Autocomplete error:', error);
+    } catch (error) {
+      console.error('Autocomplete general error:', error);
+      // 如果是 Discord API 錯誤，直接返回空陣列
       if (error instanceof Error && 'code' in error && error.code === 10062) {
         return [];
       }
@@ -212,8 +241,14 @@ export default new R7Command({
           });
         }
       }
-      else if (buttonId === 'view_image') {
-        return;
+      else if (buttonId.includes('view_image')) {
+        const index = parseInt(buttonId.split('-')[1]);
+        console.log(content.img[index]);
+        const { row } = linovelImageBuilder(content, index);
+        await interaction.followUp({
+          content: content.img[index],
+          components: [row],
+        });
       }
     }
     catch (error) {
@@ -242,7 +277,7 @@ export const linovelBuilder = (content: NovelContent, index: number, id: string,
     .setDisabled(nextChapterDisable);
 
   const imageButton = new ButtonBuilder()
-    .setCustomId('linovelib_view:view_image')
+    .setCustomId('linovelib_view:view_image-0')
     .setLabel('查看圖片')
     .setStyle(ButtonStyle.Secondary).setDisabled(content.img.length === 0);
 
@@ -256,3 +291,23 @@ export const linovelBuilder = (content: NovelContent, index: number, id: string,
 
   return { curContent: `# ${content.title}\n ## ${content.chapterTitle}\n\n${content.content[index]}\n\n-# 此小說為網路搬運，若有侵權請聯繫archie0310刪除。[${title}](https://tw.linovelib.com/novel/${id})`, row };
 };
+
+
+export const linovelImageBuilder = (content: NovelContent, index: number) => {
+  const nextButton = new ButtonBuilder()
+    .setCustomId(`linovelib_view:next_image-${index + 1}`)
+    .setLabel('>')
+    .setStyle(ButtonStyle.Secondary)
+    .setDisabled(index === content.img.length - 1);
+
+  const prevButton = new ButtonBuilder()
+    .setCustomId(`linovelib_view:prev_image-${index - 1}`)
+    .setLabel('<')
+    .setStyle(ButtonStyle.Secondary)
+    .setDisabled(index === 0);
+
+  const row = new ActionRowBuilder<ButtonBuilder>()
+    .addComponents(prevButton, nextButton);
+
+  return { row };
+}

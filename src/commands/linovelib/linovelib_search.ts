@@ -25,7 +25,7 @@ export default new R7Command({
   async execute(interaction) {
     const id = interaction.options.getString('keyword', true);
 
-    if (id === "-1" || Number.isNaN(Number(id)) || id === "-2") {
+    if (id === "-1" || Number.isNaN(Number(id)) || id === '-2') {
       await interaction.deferReply({ flags: 1 << 6 });
       await interaction.editReply({
         content: "請等待autocomplete結果，點擊選項",
