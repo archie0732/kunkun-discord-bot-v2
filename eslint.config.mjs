@@ -10,11 +10,13 @@ export default tseslint.config(
   {
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
+      '@stylistic/quotes': ['error', 'single'],
     },
   },
   stylistic.configs.customize({
     semi: true,
     arrowParens: true,
     flat: true,
+    quotes: 'single',
   }),
 );

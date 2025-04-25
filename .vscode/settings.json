@@ -2,7 +2,13 @@
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "prettier.singleQuote": true,
+    "typescript.preferences.quoteStyle": "single",
     "[typescript]": {
-      "editor.defaultFormatter": "vscode.typescript-language-features"
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.formatOnSave": true
     }
 }
